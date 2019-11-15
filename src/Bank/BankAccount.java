@@ -11,11 +11,8 @@ public class BankAccount {
     private int ownerId; //necessary?
     private double balance;
 
-
     public double getBalance(){
         return balance;
     }
-
-
-
+    
 }
