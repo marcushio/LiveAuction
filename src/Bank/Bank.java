@@ -32,7 +32,7 @@ public class Bank implements Runnable {
      */
     public double getBalance(int accountNumber) {
         BankAccount account = clientAccounts.get(accountNumber);
-        return account.getBalance();
+        return account.getTotalBalance();
     }
 
 

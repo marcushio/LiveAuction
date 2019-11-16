@@ -3,15 +3,16 @@ package Helper;
 import Agent.Agent;
 
 public class BlockedFund {
-    float amount; //amt blocked
+    double amount; //amt blocked
     String itemId;//item you bid on
-    Agent agent;  //agent that made the bid
+    int agentId;  //agent that made the bid
 
-    public BlockedFund(float amount, String itemId, Agent agent){
+    public BlockedFund(double amount, String itemId, int agentId){
         this.amount = amount;
         this.itemId = itemId;
-        this.agent = agent;
+        this.agentId = agentId;
     }
 
+    public double getAmount(){ return amount; }
 
 }
