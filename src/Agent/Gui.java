@@ -1,15 +1,13 @@
 package Agent;
 
 import javafx.application.Application;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Separator;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -24,6 +22,7 @@ public class Gui extends Application {
     Pane root;
     Scene scene;
     TextArea userEnteredAmount = new TextArea("0.00");
+    TextArea itemList = new TextArea("");
     Button refreshBalance, submitBid, refreshBids, selectItem, refreshHousesList, selectHouse;
     Text balance, availableFunds, selectedItem, selectedHouse;
     public static void main (String [] args){
@@ -31,23 +30,30 @@ public class Gui extends Application {
     }
     @Override
     public void start(Stage primaryStage){
+        Agent agent = new Agent();
         makeLayout();
         setWindow();
         primaryStage.setScene(scene);
         primaryStage.setMaximized(true);
         primaryStage.setTitle("Auction App");
+        bindVariables(agent);
         primaryStage.show();
     }
-
+    private void bindVariables(Agent agent){
+balance.textProperty().bind(agent.getBalanceProperty());
+    }
     private void setWindow(){
         Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
         scene = new Scene(root, screenBounds.getWidth(),screenBounds.getHeight());
     }
     private void makeLayout(){
         root = new Pane();
-
-        root.getChildren().addAll(
-                makeBidAndBalanceColumn()
+        HBox columnContainer = new HBox();
+        root.getChildren().add(columnContainer);
+        columnContainer.getChildren().addAll(
+                makeBidAndBalanceColumn(),
+                makeItemsColumn(),
+                makeHousesColumn()
         );
     }
     private HBox getLabeledNodeBox(String label, Node node){
@@ -90,13 +96,43 @@ public class Gui extends Application {
 
     private VBox makeItemsColumn(){
         VBox column = new VBox();
-
+        selectedHouse = new Text("");
+        selectItem = new Button("Select");
+        selectItem.setOnAction(e->handleSelectItem());
+        ScrollPane scrollItems = new ScrollPane(itemList);
+        column.getChildren().addAll(
+                getLabeledNodeBox("Selected House: ", selectedHouse),
+                new Separator(Orientation.HORIZONTAL),
+                new Text("Items"),
+                scrollItems,
+                selectItem
+        );
         return column;
+    }
+
+    private void handleSelectItem() {
     }
 
     private VBox makeHousesColumn(){
         VBox column = new VBox();
+        HBox buttons = new HBox();
+        refreshHousesList = new Button("Refresh");
+        refreshHousesList.setOnAction(e->handleRefreshHouseList());
+        selectHouse = new Button("Select");
+        selectHouse.setOnAction(e->handleSelectHouse());
+        buttons.getChildren().addAll(refreshHousesList, selectHouse);
+        column.getChildren().addAll(
+               new Text("Auction Houses"),
+                new Separator(Orientation.HORIZONTAL),
+                buttons
+        );
 
         return column;
+    }
+
+    private void handleSelectHouse() {
+    }
+
+    private void handleRefreshHouseList() {
     }
 }
