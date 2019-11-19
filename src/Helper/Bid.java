@@ -20,5 +20,19 @@ public class Bid {
         this.item = item;
         this.dollarAmount.set(dollarAmount);
     }
+
+    /**get Item object*/
+    public Item getItem(){
+        return item;
+    }
+
+    public DoubleProperty getPrice(){
+        return dollarAmount;
+    }
+
+    /**get value of price*/
+    public double getPriceVal(){
+        return dollarAmount.doubleValue();
+    }
 }
 
