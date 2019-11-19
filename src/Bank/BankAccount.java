@@ -34,13 +34,14 @@ public class BankAccount {
     /**
      * Make a withdrawal from the account
      * @param amount that you want to subtract from the amount
-     * @return the new balance of the account
+     * @return if we could make the withdrawal for this amount
      */
-    public synchronized double withdraw(double amount){ //consider just making this a boolean
+    public synchronized boolean withdraw(double amount){
         if( (this.availableBalance - amount) > 0 ) {
             this.availableBalance = this.availableBalance - amount;
+            return true;
         }
-        return availableBalance;
+        return false;
     }
 
     /**
