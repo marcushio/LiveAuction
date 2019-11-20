@@ -21,10 +21,10 @@ public class Gui extends Application {
     //TODO lookup SplitPane and how to use it.
     Pane root;
     Scene scene;
-    TextArea userEnteredAmount = new TextArea("0.00");
-    TextArea itemList = new TextArea("");
-    TextArea auctionHouseList = new TextArea("");
-    TextArea currentBidsList = new TextArea("");
+    TextField userEnteredAmount = new TextField("0.00");
+    ListView<String> itemList = new ListView<>();
+    ListView auctionHouseList = new ListView<>();
+    ListView currentBidsList = new ListView<>();
     Button refreshBalance, submitBid, refreshBids, selectItem, refreshHousesList, selectHouse;
     Text balance, availableFunds, selectedItem, selectedHouse;
     public static void main (String [] args){
@@ -78,8 +78,6 @@ public class Gui extends Application {
         balance = new Text("0.00");
         availableFunds = new Text("0.00");
         selectedItem = new Text("");
-        userEnteredAmount.setPrefRowCount(0);
-        userEnteredAmount.setPrefColumnCount(9);
         column.getChildren().addAll(
                 getLabeledNodeBox("Account Balance: $",balance),
                 getLabeledNodeBox("Available Funds: $", availableFunds),
