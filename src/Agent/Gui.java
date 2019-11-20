@@ -23,6 +23,8 @@ public class Gui extends Application {
     Scene scene;
     TextArea userEnteredAmount = new TextArea("0.00");
     TextArea itemList = new TextArea("");
+    TextArea auctionHouseList = new TextArea("");
+    TextArea currentBidsList = new TextArea("");
     Button refreshBalance, submitBid, refreshBids, selectItem, refreshHousesList, selectHouse;
     Text balance, availableFunds, selectedItem, selectedHouse;
     public static void main (String [] args){
@@ -40,7 +42,10 @@ public class Gui extends Application {
         primaryStage.show();
     }
     private void bindVariables(Agent agent){
-balance.textProperty().bind(agent.getBalanceProperty());
+        balance.textProperty().bind(agent.getCurrentBalanceProperty());
+        availableFunds.textProperty().bind(agent.getAvailableFundsProperty());
+        selectedItem.textProperty().bindBidirectional(agent.getSelectedItemProperty());
+        selectedHouse.textProperty().bindBidirectional(agent.getSelectedHouseProperty());
     }
     private void setWindow(){
         Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
@@ -73,16 +78,19 @@ balance.textProperty().bind(agent.getBalanceProperty());
         balance = new Text("0.00");
         availableFunds = new Text("0.00");
         selectedItem = new Text("");
+        userEnteredAmount.setPrefRowCount(0);
+        userEnteredAmount.setPrefColumnCount(9);
         column.getChildren().addAll(
-                getLabeledNodeBox("Account Balance: ",balance),
-                getLabeledNodeBox("Available Funds: ", availableFunds),
+                getLabeledNodeBox("Account Balance: $",balance),
+                getLabeledNodeBox("Available Funds: $", availableFunds),
                 refreshBalance,
                 new Separator(Orientation.HORIZONTAL),
                 getLabeledNodeBox("Bid Amount: $", userEnteredAmount),
-                selectedItem,
+                getLabeledNodeBox("Item: ", selectedItem),
                 submitBid,
                 new Separator(Orientation.HORIZONTAL),
                 new Text("Current Bids"),
+                currentBidsList,
                 refreshBids
         );
         return column;
@@ -123,6 +131,7 @@ balance.textProperty().bind(agent.getBalanceProperty());
         buttons.getChildren().addAll(refreshHousesList, selectHouse);
         column.getChildren().addAll(
                new Text("Auction Houses"),
+                auctionHouseList,
                 new Separator(Orientation.HORIZONTAL),
                 buttons
         );
