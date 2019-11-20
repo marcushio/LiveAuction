@@ -10,8 +10,8 @@ import java.util.Collections;
 
 public class Storage {
     private final String BOOK;
-    ArrayList<Item> regulars = new ArrayList<>();
-    ArrayList<Item> legendaries = new ArrayList<>();
+    protected ArrayList<Item> regulars = new ArrayList<>();
+    protected ArrayList<Item> legendaries = new ArrayList<>();
 
     public Storage(String book){
         BOOK = book;
@@ -27,12 +27,11 @@ public class Storage {
             while ((line = maze.readLine()) != null) {
                 if(line.length() == 1){
                     rarity = line.charAt(0)-'0';
-                }else if(rarity>7){
+                }else if(rarity<7){
                     regulars.add(new Item(line,rarity));
                 }else{
                     legendaries.add(new Item(line,rarity));
                 }
-
             }
         }finally {
             if (maze != null) {

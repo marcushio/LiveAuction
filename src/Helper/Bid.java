@@ -32,7 +32,7 @@ public class Bid {
 
     /**get value of price*/
     public double getPriceVal(){
-        return dollarAmount.doubleValue();
+        return dollarAmount.get();
     }
 }
 

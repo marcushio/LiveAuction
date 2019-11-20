@@ -1,9 +1,13 @@
 package AuctionHouse;
 
+import Helper.Item;
+
+import java.io.IOException;
+
 /**Main loop that keeps track of all auction houses*/
 public class AuctionHost implements Runnable{
     private AuctionHouse[] auctionHouses = new AuctionHouse[3];
-    private static String book = "E:/DistributedAuction/src";
+    private static String book = "E:/DistributedAuction/src/Items.txt";
     private static Storage storage;
 
     public AuctionHost(String book){
@@ -59,12 +63,18 @@ public class AuctionHost implements Runnable{
     }
 
     /**Runs the host thread*/
-    public static void main(String args[]){
+    public static void main(String args[]) throws IOException{
         if(args.length > 0){
             book = args[0];
         }
         AuctionHost host = new AuctionHost(book);
-        Thread t = new Thread(host);
-        t.start();
+        host.storage.initialize();
+        Item temp;
+        for(int i = 0; i<storage.regulars.size(); i++){
+            temp = storage.regulars.get(i);
+            System.out.println(temp.getNAME()+" $"+temp.getBASEPRICE());
+        }
+        //Thread t = new Thread(host);
+        //t.start();
     }
 }
