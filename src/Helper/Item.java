@@ -12,7 +12,7 @@ public class Item{
     /**Number value used to generate base price*/
     private final int RARITY;
     /**Start price of the item*/
-    private final float BASEPRICE;
+    private final double BASEPRICE;
 
     /**Constructs the item with name and rarity,
      * and generate a unique ID and base price*/
@@ -20,7 +20,7 @@ public class Item{
         NAME = name;
         ID = UUID.randomUUID().toString();
         RARITY = rarity;
-        BASEPRICE = (int)((10<<RARITY)*(Math.random()*10));
+        BASEPRICE = (int)(Math.pow(10,RARITY)*(int)((Math.random()*10)+1)*3.1415926*(Math.random()));
     }
 
     public String getNAME(){
@@ -31,7 +31,7 @@ public class Item{
         return ID;
     }
 
-    public float getBASEPRICE(){
+    public double getBASEPRICE(){
         return BASEPRICE;
     }
 

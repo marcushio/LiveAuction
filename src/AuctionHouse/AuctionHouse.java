@@ -2,7 +2,8 @@ package AuctionHouse;
 
 import Helper.Bid;
 import Helper.Item;
-import java.util.HashMap;
+
+import java.util.ArrayList;
 import java.util.UUID;
 
 /**Object Representing Auction House*/
@@ -10,9 +11,11 @@ public class AuctionHouse implements Runnable{
     /**Unique Identification of this auction house*/
     private String ID;
     /**Bookkeeping of items*/
-    private HashMap<Item,Double> items;
+    private int itemCount = 4;
+    private ArrayList<Item> items;
     /**End auction if true*/
     private Storage storage;
+    public Item stage;
     private boolean over = false;
     private boolean balance;
 
@@ -20,7 +23,7 @@ public class AuctionHouse implements Runnable{
     public AuctionHouse(Storage storage){
         this.storage = storage;
         ID = UUID.randomUUID().toString();
-        items = new HashMap<>();
+        items = new ArrayList<>();
     }
 
     protected boolean isOver(){
@@ -34,14 +37,29 @@ public class AuctionHouse implements Runnable{
 
     /**Add items and stuff*/
     private void initialize(){
+        for(int i = 0; i<itemCount-1;i++){
+            items.add(storage.getRandomRegular());
+        }
+        items.add(storage.getRandomLegendary());
+        stage = items.get(0);
+    }
 
+    private void sortByPrice(){
+        int highest = 0;
+        Item temp;
+        for(int i = 0; i<itemCount;i++){
+            temp = items.get(i);
+            if(temp.getBASEPRICE() > highest){
+
+            }
+        }
     }
 
     /**Try to make bid*/
     private void makeBid(Bid bid){
         Item i = bid.getItem();
         double price = bid.getPriceVal();
-        if(price > items.get(i)){
+        if(price > stage.getBASEPRICE()){
             /**Request bank to check affordable
              * If so make the bid
              * else reject agent
