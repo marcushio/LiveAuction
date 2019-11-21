@@ -9,4 +9,9 @@ class BankTest {
     @Test
     void getBalance() {
     }
+
+    @Test
+    void getAuctionHouseAddresses(){
+
+    }
 }
