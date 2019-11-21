@@ -94,7 +94,7 @@ public class Bank extends UnicastRemoteObject implements BankRemoteService {
      * @throws RemoteException
      */
     @Override
-    public int registerAgent(String name, int initialBalance) throws RemoteException {
+    public int registerAgent(String name, double initialBalance) throws RemoteException {
         agentIdList.add(name);
         BankAccount newAccount = new BankAccount(getNewId(), initialBalance);
         clientAccounts.put(newAccount.getAccountNumber(), newAccount);
