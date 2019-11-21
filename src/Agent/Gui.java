@@ -17,6 +17,8 @@ import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
+import java.util.List;
+
 public class Gui extends Application {
     //TODO lookup SplitPane and how to use it.
     Pane root;
@@ -32,7 +34,8 @@ public class Gui extends Application {
     }
     @Override
     public void start(Stage primaryStage){
-        Agent agent = new Agent();
+        List<String> params = getParameters().getRaw();
+        Agent agent = new Agent(params.get(0), params.get(1));
         makeLayout();
         setWindow();
         primaryStage.setScene(scene);

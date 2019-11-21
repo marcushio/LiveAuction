@@ -1,11 +1,16 @@
 package Agent;
 
 import AuctionHouse.AuctionHouse;
+import Bank.Bank;
 import Helper.Bid;
 import javafx.beans.property.*;
 
+import java.io.IOException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.util.ArrayList;
 import java.util.List;
+import Helper.BankRemoteService;
 
 public class Agent {
     private int accountNumber = -1;
@@ -20,6 +25,22 @@ public class Agent {
     private StringProperty selectedHouseProperty = new SimpleStringProperty("NONE");
     private StringProperty name = new SimpleStringProperty("Unknown Human");
     private StringProperty selectedItemProperty = new SimpleStringProperty("NONE");
+    private BankRemoteService bankService;
+
+    public Agent(String name, String liquidFunds){
+        this.name.set(name);
+        this.liquidFunds = Double.valueOf(liquidFunds);
+        try {
+            bankService = new Bank();//(BankRemoteService) Naming.lookup("192.168.86.74/BankServer");
+        }
+        catch(IOException e){
+            System.out.println("IO Exception");
+        }
+//        catch(NotBoundException e){
+//            System.out.println("Not bound exception");
+//        }
+       // accountNumber = bankService.registerAgent(name, liquidFunds);
+    }
 
     public StringProperty getSelectedItemProperty() {
         return selectedItemProperty;
