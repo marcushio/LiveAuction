@@ -21,7 +21,7 @@ public class Bank extends UnicastRemoteObject implements BankRemoteService {
 
     //private ExecutorService threadRunner = Executors.newCachedThreadPool(); //service to run connected clients
     private ConcurrentHashMap<Integer, BankAccount> clientAccounts = new ConcurrentHashMap<Integer, BankAccount>();
-    private List<Integer> agentIdList = new ArrayList<>();
+    private List<String> agentIdList = new ArrayList<>();
     private List<String> auctionHouseList = new ArrayList<>();
 
 
@@ -88,14 +88,14 @@ public class Bank extends UnicastRemoteObject implements BankRemoteService {
     /**
      * Registers an agent with the bank
      *
-     * @param id
+     * @param name
      * @param initialBalance
      * @return true if we were able to register else false
      * @throws RemoteException
      */
     @Override
-    public int registerAgent(int id, int initialBalance) throws RemoteException {
-        agentIdList.add(id);
+    public int registerAgent(String name, int initialBalance) throws RemoteException {
+        agentIdList.add(name);
         BankAccount newAccount = new BankAccount(getNewId(), initialBalance);
         clientAccounts.put(newAccount.getAccountNumber(), newAccount);
         return newAccount.getAccountNumber();
@@ -109,10 +109,10 @@ public class Bank extends UnicastRemoteObject implements BankRemoteService {
      * @throws RemoteException
      */
     @Override
-    public int registerAuctionHouse(int id) throws RemoteException {
+    public int registerAuctionHouse(String name) throws RemoteException {
         BankAccount newAccount = new BankAccount(getNewId(), 0);
         clientAccounts.put(newAccount.getAccountNumber(), newAccount);
-        auctionHouseList.add("rmi://127.0.0.1/" + id); 
+        auctionHouseList.add("rmi://127.0.0.1/" + name);
         return newAccount.getAccountNumber();
     }
 
