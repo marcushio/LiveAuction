@@ -2,7 +2,7 @@ package Bank;
 
 import Helper.*;
 
-import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author: Marcus Trujillo
@@ -11,11 +11,17 @@ import java.util.List;
  * an Account
  */
 public class BankAccount {
-    private int id;
+    private int accountNumber;
     private int ownerId; //necessary?
     private double availableBalance; //liquid funds that can be freely spent
-    private double totalBalance; //funds that are tied up in auctions that can't be used.
-    private List<BlockedFund> blockedFunds;
+    private double totalBalance; //funds that are tied up in auctions that can't be used PLUS available balance
+    private ConcurrentHashMap<Integer, BlockedFund> blockedFunds = new ConcurrentHashMap<>();
+
+    public BankAccount(int id, double initialAmount){
+        this.accountNumber = id;
+        this.availableBalance = initialAmount;
+        this.totalBalance = initialAmount;
+    }
 
     /**
      * @return the available balance of this account
@@ -45,12 +51,18 @@ public class BankAccount {
     }
 
     /**
+     * @return the accountNumber
+     */
+    public int getAccountNumber(){ return accountNumber; }
+
+    /**
      * Deposit a specific amount of money into an account
      * @param amount
      * @return their new total balance
      */
     public synchronized double deposit(double amount){
         this.availableBalance = this.availableBalance + amount;
+
         return totalBalance;
     }
 
@@ -60,9 +72,19 @@ public class BankAccount {
      * @param itemId the item for which these funds are getting set aside for.
      * @return true if we blocked the funds else false
      */
-    public synchronized boolean blockFunds(double amount, String itemId){ //maybe think of returning the new available bal instead
+    public synchronized boolean blockFunds(double amount, int itemId){ //maybe think of returning the new available bal instead
         availableBalance -= amount;
-        return blockedFunds.add( new BlockedFund(amount, itemId, ownerId) ) ;
+        blockedFunds.put( itemId, new BlockedFund(amount, itemId, ownerId) ) ;
+        return true; //fix this currently we always return true
     }
 
+    /**
+     * Unblock funds that were set aside for a specific item
+     */
+    public boolean unblockFunds(int itemId){
+        BlockedFund freedFunds = blockedFunds.get(itemId) ;
+        availableBalance += freedFunds.getAmount();
+        blockedFunds.remove(itemId);
+        return true; //make a way to where this could return false or maybe throws exception.
+    }
 }

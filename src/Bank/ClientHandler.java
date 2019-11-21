@@ -15,7 +15,7 @@ public class ClientHandler implements Runnable {
     private ObjectInputStream input; //consider making these bufferedWriters/bufferedReader
     private ObjectOutputStream output;
 
-    public ClientHandler(Socket clientConnection){
+    public ClientHandler(Socket clientConnection){ //rmi will probably handle all this shit for me.
         try {
             this.client = clientConnection;
             this.input = new ObjectInputStream( client.getInputStream() );
