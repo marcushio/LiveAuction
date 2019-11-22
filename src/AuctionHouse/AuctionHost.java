@@ -1,7 +1,5 @@
 package AuctionHouse;
 
-import Helper.Item;
-
 import java.io.IOException;
 
 /**Main loop that keeps track of all auction houses*/
@@ -74,6 +72,7 @@ public class AuctionHost implements Runnable{
             temp = storage.regulars.get(i);
             System.out.println(temp.getNAME()+" $"+temp.getBASEPRICE());
         }*/
+
         Thread t = new Thread(host);
         t.start();
     }

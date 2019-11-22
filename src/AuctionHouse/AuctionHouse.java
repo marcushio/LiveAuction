@@ -52,30 +52,45 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
             items.add(storage.getRandomRegular());
         }
         items.add(storage.getRandomLegendary());
+        sortByBasePrice();
         stage = new Auction(items.get(0));
     }
 
+    /**Sort item list so item with lower base price are sold first*/
     private void sortByBasePrice(){
-        int highest = 0;
+        double highest = 0;
+        int change = 0;
         Item temp;
-        for(int i = 0; i<itemCount;i++){
-            temp = items.get(i);
-            if(temp.getBASEPRICE() > highest){
-
+        double tempPrice;
+        while(change !=0) {
+            change = 0;
+            for (int i = 0; i < itemCount; i++) {
+                temp = items.get(i);
+                if ((tempPrice = temp.getBASEPRICE()) > highest) {
+                    highest = tempPrice;
+                    items.set(i, items.get(i + 1));
+                    items.set(i + 1, temp);
+                    change++;
+                }
             }
         }
     }
 
     /**Try to make bid*/
-    private void makeBid(Bid bid){
+    private StatusMessage makeBid(Bid bid){
         Item i = bid.getItem();
         double price = bid.getPriceVal();
         if(i.equals(stage.getItem()) && price > stage.getMaxBid()){
             /**Request bank to check affordable
-             * If so make the bid
+             * If so make the bid, inform previous bid for outbid,
+             * and inform new bid for winning
              * else reject agent
              * */
+            if(true) {
+                stage.outBid(price,"");
+            }
         }
+        return StatusMessage.REJECTED;
     }
 
     /**Register an account at bank with ID(Used as account ID?)*/
@@ -113,12 +128,7 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
     }
 
     public String toString(){
-        String s = "Auction House "+ID+"\nItems:\n";
-        Item temp;
-        for (int i = 0; i< itemCount;i++){
-            temp = items.get(i);
-            s += temp.getNAME() +" $"+temp.getBASEPRICE()+"\n";
-        }
+        String s = "Auction House "+ID+"\n"+stage.toString()+"\n";
         return s;
     }
 }
