@@ -8,6 +8,7 @@ import javafx.beans.property.*;
 import java.io.IOException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import Helper.BankRemoteService;
@@ -40,6 +41,12 @@ public class Agent {
 //            System.out.println("Not bound exception");
 //        }
        // accountNumber = bankService.registerAgent(name, liquidFunds);
+        try{
+           accountNumber = bankService.registerAgent(name,Double.valueOf(liquidFunds));
+        }
+        catch(RemoteException e){
+
+        }
     }
 
     public StringProperty getSelectedItemProperty() {
