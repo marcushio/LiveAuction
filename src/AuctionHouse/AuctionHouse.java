@@ -1,13 +1,13 @@
 package AuctionHouse;
 
-import Helper.Bid;
-import Helper.Item;
+import Helper.*;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**Object Representing Auction House*/
-public class AuctionHouse implements Runnable{
+public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
     /**Unique Identification of this auction house*/
     private String ID;
     /**Bookkeeping of items*/
@@ -15,7 +15,8 @@ public class AuctionHouse implements Runnable{
     private ArrayList<Item> items;
     /**End auction if true*/
     private Storage storage;
-    public Item stage;
+    public Auction stage;
+    private String acountNumber;
     private boolean over = false;
     private boolean balance;
 
@@ -24,6 +25,16 @@ public class AuctionHouse implements Runnable{
         this.storage = storage;
         ID = UUID.randomUUID().toString();
         items = new ArrayList<>();
+    }
+
+    /**Return a list of items in this Auction*/
+    public List<Item> getListedItems() {
+        return items;
+    }
+
+    /**Returns a status message to agent about how the bid went*/
+    public StatusMessage acceptBid(Bid bid){
+        return StatusMessage.ACCEPTED;
     }
 
     protected boolean isOver(){
@@ -41,10 +52,10 @@ public class AuctionHouse implements Runnable{
             items.add(storage.getRandomRegular());
         }
         items.add(storage.getRandomLegendary());
-        stage = items.get(0);
+        stage = new Auction(items.get(0));
     }
 
-    private void sortByPrice(){
+    private void sortByBasePrice(){
         int highest = 0;
         Item temp;
         for(int i = 0; i<itemCount;i++){
@@ -59,7 +70,7 @@ public class AuctionHouse implements Runnable{
     private void makeBid(Bid bid){
         Item i = bid.getItem();
         double price = bid.getPriceVal();
-        if(price > stage.getBASEPRICE()){
+        if(i.equals(stage.getItem()) && price > stage.getMaxBid()){
             /**Request bank to check affordable
              * If so make the bid
              * else reject agent
@@ -83,6 +94,7 @@ public class AuctionHouse implements Runnable{
         /**First Thing register at bank*/
         registerAtBank();
         initialize();
+        System.out.println(toString());
         while(!Thread.interrupted()){
             if(items.isEmpty()){
                 over = true;
@@ -98,5 +110,15 @@ public class AuctionHouse implements Runnable{
             return true;
         }
         return false;
+    }
+
+    public String toString(){
+        String s = "Auction House "+ID+"\nItems:\n";
+        Item temp;
+        for (int i = 0; i< itemCount;i++){
+            temp = items.get(i);
+            s += temp.getNAME() +" $"+temp.getBASEPRICE()+"\n";
+        }
+        return s;
     }
 }

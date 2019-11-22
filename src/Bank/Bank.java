@@ -14,19 +14,15 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  *
  */
-public class Bank extends UnicastRemoteObject implements BankRemoteService {
+public class Bank implements BankRemoteService { //extends UnicastRemoteObject
     //private static final long serialVersionUID = 1L; /** this needs to be changed to a specific long **/
     private static int currentId = 0;
-
     //private ExecutorService threadRunner = Executors.newCachedThreadPool(); //service to run connected clients
     private ConcurrentHashMap<String, BankAccount> clientAccounts = new ConcurrentHashMap<String, BankAccount>();
     private List<String> agentNameList = new ArrayList<>();
     private List<String> auctionHouseAddresses = new ArrayList<>();
 
-
-    public Bank() throws RemoteException {
-    }
-
+    public Bank() throws RemoteException { }
 
 
     /**
