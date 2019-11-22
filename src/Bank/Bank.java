@@ -28,17 +28,7 @@ public class Bank extends UnicastRemoteObject implements BankRemoteService {
     public Bank() throws RemoteException {
     }
 
-    public static void main(String[] args) {
-        try {
-            BankRemoteService bankServer = new Bank();
-            Naming.rebind("BankServer", bankServer);
-            System.out.println("Server created... server running...");
-        } catch (RemoteException ex) {
-            System.err.println("Remote exception while making a new bank.");
-        } catch (MalformedURLException ex) {
-            System.err.println("didn't form a correct URL for the server");
-        }
-    }
+
 
     /**
      * Returns the balance for the account specified by the given integer
@@ -163,6 +153,18 @@ public class Bank extends UnicastRemoteObject implements BankRemoteService {
 
     private synchronized int getNewId() {
         return ++currentId;
+    }
+
+    public static void main(String[] args) {
+        try {
+            BankRemoteService bankServer = new Bank();
+            Naming.rebind("//127.0.0.1/BankServer", bankServer);
+            System.out.println("Server created... server running...");
+        } catch (RemoteException ex) {
+            System.err.println("Remote exception while making a new bank.");
+        } catch (MalformedURLException ex) {
+            System.err.println("didn't form a correct URL for the server");
+        }
     }
 
 
