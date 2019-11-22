@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  *
  */
-public class Bank extends UnicastRemoteObject implements BankRemoteService {
+public class Bank implements BankRemoteService {
     private static final long serialVersionUID = 1L; /** this needs to be changed to a specific long **/
     private static int currentId = 0;
 
