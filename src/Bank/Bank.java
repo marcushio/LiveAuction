@@ -151,6 +151,21 @@ public class Bank extends UnicastRemoteObject implements BankRemoteService {
         return new ArrayList<String>();
     }
 
+    @Override
+    public int makeAccount(String name, Double initialBalance) {
+        return 0;
+    }
+
+    @Override
+    public List<String> getActiveAuctionHouseAddresses() {
+        return null;
+    }
+
+    @Override
+    public boolean transferBlockedFunds(int accountNumber) {
+        return false;
+    }
+
     private synchronized int getNewId() {
         return ++currentId;
     }
