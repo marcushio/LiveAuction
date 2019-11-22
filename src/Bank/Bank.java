@@ -1,8 +1,7 @@
 package Bank;
 
-import AuctionHouse.AuctionHouse;
 import Helper.BankRemoteService;
-import Helper.Client;
+import Helper.BlockedFund;
 
 import java.net.MalformedURLException;
 import java.rmi.Naming;
@@ -16,13 +15,13 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  */
 public class Bank extends UnicastRemoteObject implements BankRemoteService {
-    private static final long serialVersionUID = 1L; /** this needs to be changed to a specific long **/
+    //private static final long serialVersionUID = 1L; /** this needs to be changed to a specific long **/
     private static int currentId = 0;
 
     //private ExecutorService threadRunner = Executors.newCachedThreadPool(); //service to run connected clients
     private ConcurrentHashMap<Integer, BankAccount> clientAccounts = new ConcurrentHashMap<Integer, BankAccount>();
-    private List<String> agentIdList = new ArrayList<>();
-    private List<String> auctionHouseList = new ArrayList<>();
+    private List<String> agentNameList = new ArrayList<>();
+    private List<String> auctionHouseAddresses = new ArrayList<>();
 
 
     public Bank() throws RemoteException {
@@ -44,18 +43,19 @@ public class Bank extends UnicastRemoteObject implements BankRemoteService {
     /**
      * transfer funds from one account to another
      *
-     * @param payerId
-     * @param payeeId
-     * @param amount
+     * @param payerAccountId the accountId of the person who is transferring these blocked funds.
+     * @param itemId the id of the item that the funds were blocked for
      * @return true if it worked
      */
-    public synchronized boolean transferFunds(int payerId, int payeeId, double amount) throws RemoteException {
+    public synchronized boolean transferBlockedFunds(String payerAccountId, String itemId) throws RemoteException {
         //check for sufficient funds?
         boolean successful = true;
-        BankAccount payer = clientAccounts.get(payerId);
-        BankAccount payee = clientAccounts.get(payeeId);
-        successful = payer.withdraw(amount); //if it succesfully withdrew it returns true.
-        payee.deposit(amount); //probs add a way for this to fail?
+        BankAccount payerAccount = clientAccounts.get(payerAccountId);
+        BlockedFund transferFund = payerAccount.removeBlockedFund(itemId);
+        successful = payerAccount.withdraw(transferFund.getAmount()); //if it succesfully withdrew it returns true.
+
+        BankAccount payeeAccount = clientAccounts.get(transferFund.getAuctionHouseAccountId());
+        successful = payeeAccount.deposit(transferFund.getAmount());  //if it succesfully put the money in it returns true
         return successful;
     }
 
@@ -85,11 +85,24 @@ public class Bank extends UnicastRemoteObject implements BankRemoteService {
      */
     @Override
     public int registerAgent(String name, double initialBalance) throws RemoteException {
-        agentIdList.add(name);
+        agentNameList.add(name);
         BankAccount newAccount = new BankAccount(getNewId(), initialBalance);
         clientAccounts.put(newAccount.getAccountNumber(), newAccount);
         return newAccount.getAccountNumber();
     }
+
+    /**
+     * Create a new account with the given attributes and return the associated account number
+     * @param name Name of the person who needs an account
+     * @param initialBalance Starting balance for the account
+     * @return an integer account number that the user will use to access their account
+     */
+    public int makeAccount(String name, Double initialBalance) throws RemoteException {
+        BankAccount newAccount = new BankAccount(getNewId(), initialBalance);
+        clientAccounts.put(newAccount.getAccountNumber(), newAccount);
+        return newAccount.getAccountNumber();
+    }
+
 
     /**
      * Registers an auctionhouse with bank
@@ -102,7 +115,7 @@ public class Bank extends UnicastRemoteObject implements BankRemoteService {
     public int registerAuctionHouse(String name) throws RemoteException {
         BankAccount newAccount = new BankAccount(getNewId(), 0);
         clientAccounts.put(newAccount.getAccountNumber(), newAccount);
-        auctionHouseList.add("rmi://127.0.0.1/" + name);
+        auctionHouseAddresses.add(name);
         return newAccount.getAccountNumber();
     }
 
@@ -147,8 +160,8 @@ public class Bank extends UnicastRemoteObject implements BankRemoteService {
      * @throws RemoteException
      */
     @Override
-    public List<String> getAuctionHouseAddresses() throws RemoteException {
-        return new ArrayList<String>();
+    public List<String> getActiveAuctionHouseAddresses() throws RemoteException {
+        return auctionHouseAddresses;
     }
 
     private synchronized int getNewId() {

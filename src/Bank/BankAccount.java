@@ -12,10 +12,10 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class BankAccount {
     private int accountNumber;
-    private int ownerId; //necessary?
+    private String ownerId; //necessary?
     private double availableBalance; //liquid funds that can be freely spent
     private double totalBalance; //funds that are tied up in auctions that can't be used PLUS available balance
-    private ConcurrentHashMap<Integer, BlockedFund> blockedFunds = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, BlockedFund> blockedFunds = new ConcurrentHashMap<>();
 
     public BankAccount(int id, double initialAmount){
         this.accountNumber = id;
@@ -56,14 +56,27 @@ public class BankAccount {
     public int getAccountNumber(){ return accountNumber; }
 
     /**
+     * get a blocked fund related to a particular item
+     * @param itemId
+     * @return
+     */
+    public BlockedFund getBlockedFund(String itemId){
+        return blockedFunds.get(itemId);
+    }
+
+    public BlockedFund removeBlockedFund(String itemId){
+        return blockedFunds.remove(itemId);
+    }
+
+
+    /**
      * Deposit a specific amount of money into an account
      * @param amount
      * @return their new total balance
      */
-    public synchronized double deposit(double amount){
+    public synchronized boolean deposit(double amount){
         this.availableBalance = this.availableBalance + amount;
-
-        return totalBalance;
+        return true;
     }
 
     /**
@@ -72,7 +85,7 @@ public class BankAccount {
      * @param itemId the item for which these funds are getting set aside for.
      * @return true if we blocked the funds else false
      */
-    public synchronized boolean blockFunds(double amount, int itemId){ //maybe think of returning the new available bal instead
+    public synchronized boolean blockFunds(double amount, String itemId){ //maybe think of returning the new available bal instead
         availableBalance -= amount;
         blockedFunds.put( itemId, new BlockedFund(amount, itemId, ownerId) ) ;
         return true; //fix this currently we always return true
@@ -81,7 +94,7 @@ public class BankAccount {
     /**
      * Unblock funds that were set aside for a specific item
      */
-    public boolean unblockFunds(int itemId){
+    public synchronized boolean unblockFunds(int itemId){
         BlockedFund freedFunds = blockedFunds.get(itemId) ;
         availableBalance += freedFunds.getAmount();
         blockedFunds.remove(itemId);
