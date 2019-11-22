@@ -1,4 +1,5 @@
 package Helper;
 
-public class StatusMessage {
+public enum StatusMessage {
+    ACCEPTED, REJECTED, OUTBID, WINNER
 }

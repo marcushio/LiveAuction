@@ -17,4 +17,27 @@ public interface BankRemoteService extends java.rmi.Remote{
     public boolean deregister(int accountNumber) throws RemoteException;
     public List<String> getAuctionHouseAddresses() throws RemoteException;
 
+    //Signatures For Methods That Agent requires
+
+    /**
+     * Create a new account with the given attributes and return the associated account number
+     * @param name Name of the person who needs an account
+     * @param initialBalance Starting balance for the account
+     * @return an integer account number that the user will use to access their account
+     */
+    public int makeAccount(String name, Double initialBalance);
+
+    /**
+     * Return a list with strings that the rmi can use to access each active auction house
+     * @return List of Strings rmi can use to fetch proxy objects
+     */
+    public List<String> getActiveAuctionHouseAddresses();
+
+    /**
+     * Attempt to transfer funds blocked for this agent's active bids. Return true if funds were successfully transferred
+     * @param accountNumber Account number of the agent's whose funds are to be transferred
+     * @return true if funds were transferred and false otherwise
+     */
+    public boolean transferBlockedFunds(int accountNumber);
+
 }
