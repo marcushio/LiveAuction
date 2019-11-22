@@ -10,9 +10,9 @@ import java.util.List;
 public interface BankRemoteService extends java.rmi.Remote{
     //here we define what the client can call remotely
     public boolean sufficientFunds(int accountNumber, int amountNeeded) throws RemoteException;
-    public int registerAgent(String name, double initialBalance) throws RemoteException; // for Agents
-    public int registerAuctionHouse(String name) throws RemoteException; //this is for AuctionHouse, intial balance is always 0
-    public boolean transferFunds(int senderId, int receiverId, double amount) throws RemoteException;
+    public String registerAgent(String name, double initialBalance) throws RemoteException; // for Agents
+    public String registerAuctionHouse(String name) throws RemoteException; //this is for AuctionHouse, intial balance is always 0
+    //public boolean transferFunds(int senderId, int receiverId, double amount) throws RemoteException; transfer blocked funds took this ones place
     public boolean unblockFunds(int accountNumber, int itemId) throws RemoteException;
     public boolean deregister(int accountNumber) throws RemoteException;
 
@@ -24,7 +24,7 @@ public interface BankRemoteService extends java.rmi.Remote{
      * @param initialBalance Starting balance for the account
      * @return an integer account number that the user will use to access their account
      */
-    public int makeAccount(String name, Double initialBalance) throws RemoteException; //only agents should call this
+    public String makeAccount(String name, Double initialBalance) throws RemoteException; //only agents should call this
 
     /**
      * Return a list with strings that the rmi can use to access each active auction house
@@ -35,8 +35,9 @@ public interface BankRemoteService extends java.rmi.Remote{
     /**
      * Attempt to transfer funds blocked for this agent's active bids. Return true if funds were successfully transferred
      * @param accountNumber Account number of the agent's whose funds are to be transferred
+     * @param itemId is the id of the item the funds were blocked for.
      * @return true if funds were transferred and false otherwise
      */
-    public boolean transferBlockedFunds(int accountNumber, int itemId) throws RemoteException;
+    public boolean transferBlockedFunds(String accountNumber, String itemId) throws RemoteException;
 
 }

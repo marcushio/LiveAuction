@@ -19,7 +19,7 @@ public class Bank extends UnicastRemoteObject implements BankRemoteService {
     private static int currentId = 0;
 
     //private ExecutorService threadRunner = Executors.newCachedThreadPool(); //service to run connected clients
-    private ConcurrentHashMap<Integer, BankAccount> clientAccounts = new ConcurrentHashMap<Integer, BankAccount>();
+    private ConcurrentHashMap<String, BankAccount> clientAccounts = new ConcurrentHashMap<String, BankAccount>();
     private List<String> agentNameList = new ArrayList<>();
     private List<String> auctionHouseAddresses = new ArrayList<>();
 
@@ -84,7 +84,7 @@ public class Bank extends UnicastRemoteObject implements BankRemoteService {
      * @throws RemoteException
      */
     @Override
-    public int registerAgent(String name, double initialBalance) throws RemoteException {
+    public String registerAgent(String name, double initialBalance) throws RemoteException {
         agentNameList.add(name);
         BankAccount newAccount = new BankAccount(getNewId(), initialBalance);
         clientAccounts.put(newAccount.getAccountNumber(), newAccount);
@@ -97,7 +97,7 @@ public class Bank extends UnicastRemoteObject implements BankRemoteService {
      * @param initialBalance Starting balance for the account
      * @return an integer account number that the user will use to access their account
      */
-    public int makeAccount(String name, Double initialBalance) throws RemoteException {
+    public String makeAccount(String name, Double initialBalance) throws RemoteException {
         BankAccount newAccount = new BankAccount(getNewId(), initialBalance);
         clientAccounts.put(newAccount.getAccountNumber(), newAccount);
         return newAccount.getAccountNumber();
@@ -112,7 +112,7 @@ public class Bank extends UnicastRemoteObject implements BankRemoteService {
      * @throws RemoteException
      */
     @Override
-    public int registerAuctionHouse(String name) throws RemoteException {
+    public String registerAuctionHouse(String name) throws RemoteException {
         BankAccount newAccount = new BankAccount(getNewId(), 0);
         clientAccounts.put(newAccount.getAccountNumber(), newAccount);
         auctionHouseAddresses.add(name);
@@ -164,8 +164,8 @@ public class Bank extends UnicastRemoteObject implements BankRemoteService {
         return auctionHouseAddresses;
     }
 
-    private synchronized int getNewId() {
-        return ++currentId;
+    private synchronized String getNewId() {
+        return Integer.toString(++currentId);
     }
 
     public static void main(String[] args) {

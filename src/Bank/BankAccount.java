@@ -11,14 +11,14 @@ import java.util.concurrent.ConcurrentHashMap;
  * an Account
  */
 public class BankAccount {
-    private int accountNumber;
+    private String accountId;
     private String ownerId; //necessary?
     private double availableBalance; //liquid funds that can be freely spent
     private double totalBalance; //funds that are tied up in auctions that can't be used PLUS available balance
     private ConcurrentHashMap<String, BlockedFund> blockedFunds = new ConcurrentHashMap<>();
 
-    public BankAccount(int id, double initialAmount){
-        this.accountNumber = id;
+    public BankAccount(String id, double initialAmount){
+        this.accountId = id;
         this.availableBalance = initialAmount;
         this.totalBalance = initialAmount;
     }
@@ -53,7 +53,7 @@ public class BankAccount {
     /**
      * @return the accountNumber
      */
-    public int getAccountNumber(){ return accountNumber; }
+    public String getAccountNumber(){ return accountId; }
 
     /**
      * get a blocked fund related to a particular item
@@ -85,9 +85,9 @@ public class BankAccount {
      * @param itemId the item for which these funds are getting set aside for.
      * @return true if we blocked the funds else false
      */
-    public synchronized boolean blockFunds(double amount, String itemId){ //maybe think of returning the new available bal instead
+    public synchronized boolean blockFunds(double amount, String itemId, String auctionHouseAccountId){ //maybe think of returning the new available bal instead
         availableBalance -= amount;
-        blockedFunds.put( itemId, new BlockedFund(amount, itemId, ownerId) ) ;
+        blockedFunds.put( itemId, new BlockedFund(amount, itemId, ownerId, auctionHouseAccountId ) ) ;
         return true; //fix this currently we always return true
     }
 

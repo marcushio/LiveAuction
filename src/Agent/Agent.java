@@ -14,7 +14,7 @@ import java.util.List;
 import Helper.BankRemoteService;
 
 public class Agent {
-    private int accountNumber = -1;
+    private String accountNumber = "-1";
     private double liquidFunds = 0.00;
     private double currentBalance = 0;
     private double availableFunds = 0;
