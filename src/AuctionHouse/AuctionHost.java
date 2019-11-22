@@ -69,12 +69,12 @@ public class AuctionHost implements Runnable{
         }
         AuctionHost host = new AuctionHost(book);
         host.storage.initialize();
-        Item temp;
+/*        Item temp;
         for(int i = 0; i<storage.regulars.size(); i++){
             temp = storage.regulars.get(i);
             System.out.println(temp.getNAME()+" $"+temp.getBASEPRICE());
-        }
-        //Thread t = new Thread(host);
-        //t.start();
+        }*/
+        Thread t = new Thread(host);
+        t.start();
     }
 }
