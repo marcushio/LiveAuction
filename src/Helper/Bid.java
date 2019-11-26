@@ -4,16 +4,32 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import java.io.Serializable;
 
 /**
  * Encapsulates information about a bid which consists of an amount and and item.
  */
-public class Bid {
+public class Bid implements Serializable {
     private String itemID;
     private double dollarAmount= 0.00;
     private String houseAddress = "";
     private BidStatusMessage status = BidStatusMessage.REJECTED;
     private StringProperty displayString = new SimpleStringProperty("");
+    @Override
+    public boolean equals(Object o){
+        if (!(o instanceof Bid)) return false;
+        Bid otherBid = (Bid) o;
+        if (!otherBid.itemID.equals(this.itemID)) return false;
+        if (otherBid.dollarAmount != this.dollarAmount) return false;
+        return true;
+    }
+    @Override
+    /**
+     * {@inheritDoc}
+     */
+    public int hashCode(){
+        return itemID.hashCode();
+    }
     /**
      * Constructor that sets the item and dollar amount the user will pay for it
      * @param itemID ID of item to be bid on

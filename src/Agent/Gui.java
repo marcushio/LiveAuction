@@ -1,26 +1,20 @@
 package Agent;
-//TODO set up display of items of the selected auction house
+
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-
 import java.util.List;
 
 public class Gui extends Application {
-    //TODO lookup SplitPane and how to use it.
     Pane root;
     Scene scene;
     TextField userEnteredAmount = new TextField("0.00");

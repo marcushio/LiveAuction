@@ -1,33 +1,39 @@
 package Agent;
 
 import AuctionHouse.AuctionHouse;
-import AuctionHouse.Storage;
 import Bank.Bank;
 import Helper.*;
-import javafx.beans.Observable;
-import javafx.beans.property.*;
-
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-
+/**
+ * Agent is the model used by Gui. It interacts with the servers. The Gui instance updates Agent's appropriate
+ * members through bindings and the Agent instance updates its other bound variables to reflect changes resulting
+ * from processing those updates. Agent also listens for updates from the various
+ */
 public class Agent {
+    private Set<Bid> bidsMade = new HashSet<>();
     private StringProperty userMessages = new SimpleStringProperty("");
     private StringProperty currentBidAmount = new SimpleStringProperty("0.00");
     private ObservableList<String> itemList = FXCollections.observableArrayList();
     private ObservableList<String> auctionHouseList = FXCollections.observableArrayList();
     private ObservableList<String> bidList = FXCollections.observableArrayList();
     private String accountID = "INVALID";
+    private String ipAddress = "";
     private double liquidFunds = 0.00;
-    private ListProperty<Bid> bidsPlaced = new SimpleListProperty<>();
     private ListProperty<AuctionHouse> availableHouses = new SimpleListProperty<>();
     private AuctionHouseRemoteService selectedHouse;
     private StringProperty currentBalanceProperty = new SimpleStringProperty("");
@@ -63,10 +69,6 @@ public class Agent {
     }
     public StringProperty getSelectedItemProperty() {
         return selectedItemProperty;
-    }
-
-    public ListProperty<Bid> getBidsPlaced() {
-        return bidsPlaced;
     }
 
     public void refreshAvailableHouses() {
@@ -139,11 +141,19 @@ public class Agent {
         BidStatusMessage status = selectedHouse.acceptBid(bid);
         if(status == BidStatusMessage.REJECTED) userMessages.set("Bid was rejected");
         else {
-            bidsPlaced.add(bid);
+            bidsMade.add(bid);
             refreshBidList();
         }
     }
 
+    /**
+     * Change the BidStatusMessage of the bid. This should be called when a bid's status changes in an AuctionHouse instance
+     * @param bid Bid whose status is to be changed.
+     */
+    public void updateBid(Bid bid){
+        bidsMade.add(bid);
+        refreshBidList();
+    }
     public StringProperty getMessagesProperty() {
         return userMessages;
     }
@@ -154,7 +164,7 @@ public class Agent {
 
     public void refreshBidList() {
         bidList.clear();
-        for(Bid bid: bidsPlaced){
+        for(Bid bid: bidsMade){
             connect(bid.getHouseAddress());
             selectedHouse.setBidStatus(bid);
             bidList.add(bid.toString());
