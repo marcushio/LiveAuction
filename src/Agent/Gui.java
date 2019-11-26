@@ -83,6 +83,7 @@ public class Gui extends Application {
         refreshBids = new Button("Refresh");
         submitBid.setOnAction(event -> handleSubmitBid());
         refreshBids.setOnAction(e->handleRefreshBids());
+        refreshBalance.setOnAction(e->handleRefreshBalances());
         balance = new Text("0.00");
         availableFunds = new Text("0.00");
         selectedItem = new Text("");
