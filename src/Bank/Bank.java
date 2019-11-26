@@ -56,6 +56,26 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
     }
 
     /**
+     * Return a String reflecting the total account balance of the account with the given ID
+     *
+     * @param accountID ID of client requesting balance
+     * @return String reflecting the total account balance of the account
+     */
+    public String getBalanceString(String accountID) {
+        return null;
+    }
+
+    /**
+     * Return a String reflecting the available funds of the account with the given ID
+     *
+     * @param accountID ID of client requesting balance
+     * @return String reflecting the difference between the account balance and total of all blocked funds for the account
+     */
+    public String getAvailableFundsString(String accountID) {
+        return null;
+    }
+
+    /**
      * checks if this clients account has sufficient funds for a bid.
      *
      * @param accountNumber
