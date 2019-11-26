@@ -2,6 +2,9 @@ package AuctionHouse;
 
 import Helper.*;
 
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -54,6 +57,15 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
         items.add(storage.getRandomLegendary());
         sortByBasePrice();
         stage = new Auction(items.get(0));
+        try {
+            AuctionHouseRemoteService thisServer = this;
+            Naming.rebind("//127.0.0.1/"+ID, thisServer);
+            System.out.println("Server created... server running...");
+        } catch (RemoteException ex) {
+            System.err.println("Remote exception while making a Auction House");
+        } catch (MalformedURLException ex) {
+            System.err.println("didn't form a correct URL for the server");
+        }
     }
 
     /**Sort item list so item with lower base price are sold first*/
