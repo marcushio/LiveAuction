@@ -16,5 +16,12 @@ public interface AuctionHouseRemoteService extends java.rmi.Remote {
      * @param bid
      * @return StatusMessage specifying how the bid is doing
      */
-    public StatusMessage acceptBid(Bid bid);
+    public BidStatusMessage acceptBid(Bid bid);
+
+    /**
+     * Check the status of the given bid, set it in the given bid to the new status, and return the updated bid.
+     * @param bid original bid sent when bid was placed
+     * @return Same Bid instance after setStatus has been used to update it
+     */
+    public Bid setBidStatus(Bid bid);
 }
