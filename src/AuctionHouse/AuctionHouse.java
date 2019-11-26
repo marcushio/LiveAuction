@@ -77,7 +77,7 @@ public class AuctionHouse implements Runnable{
     }
 
     /**Try to make bid*/
-    private StatusMessage makeBid(Bid bid){
+    private BidStatusMessage makeBid(Bid bid){
         Item i = bid.getItem();
         double price = bid.getPriceVal();
         if(i.equals(stage.getItem()) && price > stage.getMaxBid()){
@@ -90,7 +90,7 @@ public class AuctionHouse implements Runnable{
                 stage.outBid(price,"");
             }
         }
-        return StatusMessage.REJECTED;
+        return BidStatusMessage.REJECTED;
     }
 
     /**Register an account at bank with ID(Used as account ID?)*/
