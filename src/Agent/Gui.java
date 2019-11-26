@@ -1,41 +1,38 @@
 package Agent;
 
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-
 import java.util.List;
 
 public class Gui extends Application {
-    //TODO lookup SplitPane and how to use it.
     Pane root;
     Scene scene;
     TextField userEnteredAmount = new TextField("0.00");
     ListView<String> itemList = new ListView<>();
-    ListView auctionHouseList = new ListView<>();
+    ListView <String> auctionHouseList = new ListView<>();
     ListView currentBidsList = new ListView<>();
     Button refreshBalance, submitBid, refreshBids, selectItem, refreshHousesList, selectHouse;
-    Text balance, availableFunds, selectedItem, selectedHouse;
+    Text balance, availableFunds, selectedItem, selectedHouse, name;
+    TextArea messages = new TextArea("");
+    Agent agent;
+
     public static void main (String [] args){
         launch(args);
     }
     @Override
     public void start(Stage primaryStage){
         List<String> params = getParameters().getRaw();
-        Agent agent = new Agent(params.get(0), params.get(1));
+        agent = new Agent(params.get(0), params.get(1));
         makeLayout();
         setWindow();
         primaryStage.setScene(scene);
@@ -45,10 +42,16 @@ public class Gui extends Application {
         primaryStage.show();
     }
     private void bindVariables(Agent agent){
+        name.textProperty().set(agent.getName().get());
         balance.textProperty().bind(agent.getCurrentBalanceProperty());
         availableFunds.textProperty().bind(agent.getAvailableFundsProperty());
         selectedItem.textProperty().bindBidirectional(agent.getSelectedItemProperty());
+        userEnteredAmount.textProperty().bindBidirectional(agent.getCurrentBidAmount());
         selectedHouse.textProperty().bindBidirectional(agent.getSelectedHouseProperty());
+        auctionHouseList.setItems(agent.getHousesAddressList());
+        itemList.setItems(agent.getItemStringList());
+        currentBidsList.setItems(agent.getBidList());
+        messages.textProperty().bind(agent.getMessagesProperty());
     }
     private void setWindow(){
         Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
@@ -59,9 +62,11 @@ public class Gui extends Application {
         HBox columnContainer = new HBox();
         root.getChildren().add(columnContainer);
         columnContainer.getChildren().addAll(
-                makeBidAndBalanceColumn(),
+                makeHousesColumn(),
                 makeItemsColumn(),
-                makeHousesColumn()
+                makeBidAndBalanceColumn(),
+                messages
+
         );
     }
     private HBox getLabeledNodeBox(String label, Node node){
@@ -76,18 +81,21 @@ public class Gui extends Application {
         refreshBalance = new Button("Refresh");
         submitBid = new Button("Bid!");
         refreshBids = new Button("Refresh");
-        refreshBalance.setOnAction(e->handleRefreshBalance());
+        submitBid.setOnAction(event -> handleSubmitBid());
         refreshBids.setOnAction(e->handleRefreshBids());
+        refreshBalance.setOnAction(e->handleRefreshBalances());
         balance = new Text("0.00");
         availableFunds = new Text("0.00");
         selectedItem = new Text("");
+        name = new Text("");
         column.getChildren().addAll(
+                getLabeledNodeBox("Name: ", name),
                 getLabeledNodeBox("Account Balance: $",balance),
                 getLabeledNodeBox("Available Funds: $", availableFunds),
                 refreshBalance,
                 new Separator(Orientation.HORIZONTAL),
                 getLabeledNodeBox("Bid Amount: $", userEnteredAmount),
-                getLabeledNodeBox("Item: ", selectedItem),
+                getLabeledNodeBox("Selected Item: ", selectedItem),
                 submitBid,
                 new Separator(Orientation.HORIZONTAL),
                 new Text("Current Bids"),
@@ -97,11 +105,10 @@ public class Gui extends Application {
         return column;
     }
 
-    private void handleRefreshBids() {
+    private void handleSubmitBid() {
+        agent.submitBid();
     }
 
-    private void handleRefreshBalance() {
-    }
 
     private VBox makeItemsColumn(){
         VBox column = new VBox();
@@ -119,15 +126,12 @@ public class Gui extends Application {
         return column;
     }
 
-    private void handleSelectItem() {
-    }
-
     private VBox makeHousesColumn(){
         VBox column = new VBox();
         HBox buttons = new HBox();
         refreshHousesList = new Button("Refresh");
         refreshHousesList.setOnAction(e->handleRefreshHouseList());
-        selectHouse = new Button("Select");
+        selectHouse = new Button("Connect");
         selectHouse.setOnAction(e->handleSelectHouse());
         buttons.getChildren().addAll(refreshHousesList, selectHouse);
         column.getChildren().addAll(
@@ -136,13 +140,29 @@ public class Gui extends Application {
                 new Separator(Orientation.HORIZONTAL),
                 buttons
         );
-
         return column;
     }
 
+    private void handleSelectItem() {
+        selectedItem.setText(itemList.getSelectionModel().getSelectedItem());
+    }
+
     private void handleSelectHouse() {
+        agent.connect(auctionHouseList.getSelectionModel().getSelectedItem());
+        handleRefreshItems();
     }
 
     private void handleRefreshHouseList() {
+        agent.refreshAvailableHouses();
+    }
+
+    private void handleRefreshBids() {
+        agent.refreshBidList();
+    }
+    private void handleRefreshItems(){
+        agent.refreshItemList();
+    }
+    private void handleRefreshBalances() {
+        agent.refreshBalances();
     }
 }
