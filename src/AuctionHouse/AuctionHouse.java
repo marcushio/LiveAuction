@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**Object Representing Auction House*/
-public class AuctionHouse implements Runnable{
+public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
     /**Unique Identification of this auction house*/
     private String ID;
     /**Bookkeeping of items*/
@@ -33,11 +33,6 @@ public class AuctionHouse implements Runnable{
     /**Return a list of items in this Auction*/
     public List<Item> getListedItems() {
         return items;
-    }
-
-    /**Returns a status message to agent about how the bid went*/
-    public BidStatusMessage acceptBid(Bid bid){
-        return BidStatusMessage.ACCEPTED;
     }
 
     protected boolean isOver(){
@@ -89,7 +84,7 @@ public class AuctionHouse implements Runnable{
     }
 
     /**Try to make bid*/
-    private BidStatusMessage makeBid(Bid bid){
+    public BidStatusMessage makeBid(Bid bid){
         Item i = bid.getItem();
         double price = bid.getPriceVal();
         if(i.equals(stage.getItem()) && price > stage.getMaxBid()){

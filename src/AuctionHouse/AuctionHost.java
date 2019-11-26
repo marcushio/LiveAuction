@@ -36,7 +36,7 @@ public class AuctionHost implements Runnable{
             }
         }
     }
-
+    
     /**Remove all auction houses that is over, and make new ones to replace them*/
     private boolean removeAuctionHouse(){
         AuctionHouse a;
