@@ -47,10 +47,10 @@ public class Agent {
         this.name.set(name);
         this.liquidFunds = Double.parseDouble(liquidFunds);
         try {
-            bankService = (BankRemoteService) Naming.lookup("//localhost/BankServer");
+            bankService = (BankRemoteService) Naming.lookup("bankServer");
         }
         catch(IOException e){
-            System.out.println("IO Exception From Bank Service");
+            System.out.println("IO Exception Could not connect to bank");
         }
         catch(NotBoundException e){
             System.out.println("Not bound exception");
