@@ -32,10 +32,10 @@ public class Agent {
         this.name.set(name);
         this.liquidFunds = Double.valueOf(liquidFunds);
         try {
-            bankService = new Bank();//(BankRemoteService) Naming.lookup("192.168.86.74/BankServer");
+            bankService = (BankRemoteService) Naming.lookup("bankServer");
         }
-        catch(IOException e){
-            System.out.println("IO Exception");
+        catch(IOException | NotBoundException e){
+            System.out.println("IO Exception Could not connect to bank");
         }
 //        catch(NotBoundException e){
 //            System.out.println("Not bound exception");

@@ -6,6 +6,8 @@ import Helper.BlockedFund;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
@@ -166,14 +168,21 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
 
     public static void main(String[] args) {
         try {
+            System.out.println("making bank...");
             BankRemoteService bankServer = new Bank();
-            Naming.rebind("//127.0.0.1/BankServer", bankServer);
+            BankRemoteService stub = (BankRemoteService) UnicastRemoteObject.exportObject( (BankRemoteService) bankServer, 0);
+            System.out.println("bank made now binding");
+            Registry registry = LocateRegistry.createRegistry(1099);
+            registry.rebind("bankServer", stub);
             System.out.println("Server created... server running...");
         } catch (RemoteException ex) {
             System.err.println("Remote exception while making a new bank.");
-        } catch (MalformedURLException ex) {
+        }
+        /*
+        catch (MalformedURLException ex) {
             System.err.println("didn't form a correct URL for the server");
         }
+         */
     }
 
 
