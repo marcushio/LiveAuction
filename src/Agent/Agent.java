@@ -47,10 +47,10 @@ public class Agent {
         this.name.set(name);
         this.liquidFunds = Double.parseDouble(liquidFunds);
         try {
-            bankService = new Bank();//(BankRemoteService) Naming.lookup("192.168.86.74/BankServer");
+            bankService = (BankRemoteService) Naming.lookup("bankServer");
         }
-        catch(IOException e){
-            System.out.println("IO Exception From Bank Service");
+        catch(IOException | NotBoundException e){
+            System.out.println("IO Exception Could not connect to bank");
         }
 //        catch(NotBoundException e){
 //            System.out.println("Not bound exception");
@@ -138,7 +138,7 @@ public class Agent {
     public void submitBid() {
         Bid bid = new Bid(selectedItemProperty.get(),Double.parseDouble(currentBidAmount.get()));
         bid.setHouseAddress(selectedHouseProperty.get());
-        BidStatusMessage status = selectedHouse.acceptBid(bid);
+        BidStatusMessage status = selectedHouse.makeBid(bid);
         if(status == BidStatusMessage.REJECTED) userMessages.set("Bid was rejected");
         else {
             bidsMade.add(bid);
@@ -166,7 +166,6 @@ public class Agent {
         bidList.clear();
         for(Bid bid: bidsMade){
             connect(bid.getHouseAddress());
-            selectedHouse.setBidStatus(bid);
             bidList.add(bid.toString());
         }
     }
