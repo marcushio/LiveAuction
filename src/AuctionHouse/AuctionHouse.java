@@ -1,5 +1,6 @@
 package AuctionHouse;
 
+import Agent.Agent;
 import Helper.*;
 
 import java.net.MalformedURLException;
@@ -13,12 +14,14 @@ import java.util.UUID;
 public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
     /**Unique Identification of this auction house*/
     private String ID;
-    /**Bookkeeping of items*/
-    private int itemCount = 4;
-    private ArrayList<Item> items;
+    /**Number of auction stages at once*/
+    private int itemCount = 3;
+    /**Keeps track of how many items are sold here*/
+    private int itemsSold = 0;
     /**End auction if true*/
     private Storage storage;
     public Auction stage;
+    public Auction[] stages;
     private String acountNumber;
     private boolean over = false;
     private boolean balance;
@@ -27,11 +30,15 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
     public AuctionHouse(Storage storage){
         this.storage = storage;
         ID = UUID.randomUUID().toString();
-        items = new ArrayList<>();
+        stages = new Auction[itemCount];
     }
 
     /**Return a list of items in this Auction*/
     public List<Item> getListedItems() {
+        List<Item> items = new ArrayList<>();
+        for(int i = 0; i<3; i++){
+            items.add(stages[0].getItem());
+        }
         return items;
     }
 
@@ -46,12 +53,11 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
 
     /**Add items and stuff*/
     private void initialize(){
-        for(int i = 0; i<itemCount-1;i++){
-            items.add(storage.getRandomRegular());
+        Item temp;
+        for(int i = 0; i<itemCount;i++){
+            temp = storage.getRandomItem();
+            stages[i] = new Auction(temp);
         }
-        items.add(storage.getRandomLegendary());
-        sortByBasePrice();
-        stage = new Auction(items.get(0));
         try {
             AuctionHouseRemoteService thisServer = this;
             Naming.rebind("//127.0.0.1/"+ID, thisServer);
@@ -63,8 +69,8 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
         }
     }
 
-    /**Sort item list so item with lower base price are sold first*/
-    private void sortByBasePrice(){
+    /**Seems useless now*/
+/*    private void sortByBasePrice(){
         double highest = 0;
         int change = 0;
         Item temp;
@@ -81,7 +87,7 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
                 }
             }
         }
-    }
+    }*/
 
     /**Try to make bid*/
     public BidStatusMessage makeBid(Bid bid){
@@ -93,8 +99,10 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
              * and inform new bid for winning
              * else reject agent
              * */
+            Agent currentAgent = stage.getCurrentAgent();
             if(true) {
-                stage.outBid(price,"");
+
+                stage.outBid(price,currentAgent);
             }
         }
         return BidStatusMessage.REJECTED;
@@ -118,9 +126,11 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
         initialize();
         System.out.println(toString());
         while(!Thread.interrupted()){
-            if(items.isEmpty()){
-                over = true;
-                break;
+            try{
+                if(storage.isEmpty())
+                Thread.sleep(1000);
+            }catch (InterruptedException e){
+                e.printStackTrace();
             }
         }
         deRegisterAtBank();
@@ -135,7 +145,10 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
     }
 
     public String toString(){
-        String s = "Auction House "+ID+"\n"+stage.toString()+"\n";
+        String s = "Auction House "+ID+"\n";
+        for(int i = 0; i< itemCount; i++){
+            s += stages[i].getItem().toString()+"\n";
+        }
         return s;
     }
 }

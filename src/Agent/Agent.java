@@ -138,7 +138,7 @@ public class Agent {
     public void submitBid() {
         Bid bid = new Bid(selectedItemProperty.get(),Double.parseDouble(currentBidAmount.get()));
         bid.setHouseAddress(selectedHouseProperty.get());
-        BidStatusMessage status = selectedHouse.acceptBid(bid);
+        BidStatusMessage status = selectedHouse.makeBid(bid);
         if(status == BidStatusMessage.REJECTED) userMessages.set("Bid was rejected");
         else {
             bidsMade.add(bid);
