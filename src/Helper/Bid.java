@@ -88,4 +88,3 @@ public class Bid implements Serializable {
         this.houseAddress = houseAddress;
     }
 }
-

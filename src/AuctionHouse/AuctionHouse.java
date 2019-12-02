@@ -23,7 +23,7 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
     private String acountNumber;
     private boolean over = false;
     private boolean balance;
-    private BlockingQueue<AuctionMessage> internal = new LinkedBlockingDeque<>();
+    private BlockingQueue<Bid> internal = new LinkedBlockingDeque<>();
 
     /**Constructs auction house with a unique ID*/
     public AuctionHouse(Storage storage){
