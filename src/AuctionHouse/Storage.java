@@ -10,8 +10,7 @@ import java.util.Collections;
 
 public class Storage {
     private final String BOOK;
-    protected ArrayList<Item> regulars = new ArrayList<>();
-    protected ArrayList<Item> legendaries = new ArrayList<>();
+    protected ArrayList<Item> items = new ArrayList<>();
 
     public Storage(String book){
         BOOK = book;
@@ -27,10 +26,8 @@ public class Storage {
             while ((line = maze.readLine()) != null) {
                 if(line.length() == 1){
                     rarity = line.charAt(0)-'0';
-                }else if(rarity<7){
-                    regulars.add(new Item(line,rarity));
                 }else{
-                    legendaries.add(new Item(line,rarity));
+                    items.add(new Item(line,rarity));
                 }
             }
         }finally {
@@ -38,18 +35,25 @@ public class Storage {
                 maze.close();
             }
         }
-        Collections.shuffle(regulars);
-        Collections.shuffle(legendaries);
+        Collections.shuffle(items);
     }
 
-    protected Item getRandomRegular(){
-        int random = (int)(Math.random()*regulars.size());
-        return regulars.get(random);
+    /**Takes out a random item from the storage for sale in AH
+     * @return random item in storage
+     * */
+    protected Item getRandomItem(){
+        int random = (int)(Math.random()*items.size());
+        Item temp = items.get(random);
+        items.remove(temp);
+        return temp;
     }
 
-    protected Item getRandomLegendary(){
-        int random = (int)(Math.random()*legendaries.size());
-        return legendaries.get(random);
-    }
 
+    public boolean isEmpty(){
+        if(items.isEmpty()){
+            return true;
+        }else{
+            return false;
+        }
+    }
 }
