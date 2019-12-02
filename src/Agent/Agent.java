@@ -51,10 +51,10 @@ public class Agent {
 //            bankService = (BankRemoteService) Naming.lookup("bankServer");
 //        }
 //        catch(IOException e){
-//            System.out.println("IO Exception Could not connect to bank");
+//            userMessages.set("IO Exception Could not connect to bank");
 //        }
 //        catch(NotBoundException e){
-//            System.out.println("Not bound exception");
+//            userMessages.set("Not bound exception");
 //     }
 //       // accountNumber = bankService.registerAgent(name, liquidFunds);
 //        try{
@@ -79,7 +79,7 @@ public class Agent {
             auctionHouseList.addAll(houseAddresses);
         }
         catch (RemoteException e){
-            System.out.println("Failed to connect to bank.");
+            userMessages.set("Failed to connect to bank.");
         }
     }
     public void refreshItemList(){
@@ -118,13 +118,13 @@ public class Agent {
             selectedHouse = (AuctionHouseRemoteService) Naming.lookup(selectedHouseAddress);
         }
         catch(NotBoundException e){
-            System.out.println("NOT BOUND ISSUE WITH HOUSE");
+            userMessages.set("NOT BOUND ISSUE WITH HOUSE");
         }
         catch(RemoteException e){
-            System.out.println("REMOTE HOUSE COULDN'T BE REACHED");
+            userMessages.set("REMOTE HOUSE COULDN'T BE REACHED");
         }
         catch(MalformedURLException e){
-            System.out.println("BAD URL");
+            userMessages.set("BAD URL");
         }
     }
 
