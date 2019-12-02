@@ -1,37 +1,43 @@
 package AuctionHouse;
 
+import Agent.Agent;
 import Helper.*;
-
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 
 /**Object Representing Auction House*/
 public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
     /**Unique Identification of this auction house*/
     private String ID;
-    /**Bookkeeping of items*/
-    private int itemCount = 4;
-    private ArrayList<Item> items;
-    /**End auction if true*/
+    /**Max number of auction stages at once*/
+    private int itemCount = 3;
+    /**Object containing all items*/
     private Storage storage;
-    public Auction stage;
+    public Auction[] stages;
     private String acountNumber;
     private boolean over = false;
     private boolean balance;
+    private BlockingQueue<AuctionMessage> internal = new LinkedBlockingDeque<>();
 
     /**Constructs auction house with a unique ID*/
     public AuctionHouse(Storage storage){
         this.storage = storage;
         ID = UUID.randomUUID().toString();
-        items = new ArrayList<>();
+        stages = new Auction[itemCount];
     }
 
     /**Return a list of items in this Auction*/
     public List<Item> getListedItems() {
+        List<Item> items = new ArrayList<>();
+        for(int i = 0; i<3; i++){
+            items.add(stages[0].getItem());
+        }
         return items;
     }
 
@@ -46,13 +52,14 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
 
     /**Add items and stuff*/
     private void initialize(){
-        for(int i = 0; i<itemCount-1;i++){
-            items.add(storage.getRandomRegular());
+        Auction temp;
+        for(int i = 0; i<itemCount;i++){
+            temp = new Auction(storage.getRandomItem());
+            stages[i] = temp;
+            Thread t = new Thread(temp);
+            t.start();
         }
-        items.add(storage.getRandomLegendary());
-        sortByBasePrice();
-        stage = new Auction(items.get(0));
-        try {
+/*        try {
             AuctionHouseRemoteService thisServer = this;
             Naming.rebind("//127.0.0.1/"+ID, thisServer);
             System.out.println("Server created... server running...");
@@ -60,41 +67,66 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
             System.err.println("Remote exception while making a Auction House");
         } catch (MalformedURLException ex) {
             System.err.println("didn't form a correct URL for the server");
+        }*/
+    }
+
+    public int findStage(Item item){
+        for(int i = 0; i<itemCount;i++){
+            if(item.equals(stages[i])){
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**Make new stage to replace the old ones*/
+    private void addNewStage(){
+        Auction temp;
+        for(int i = 0; i<itemCount; i++){
+            if(stages[i] == null && !storage.isEmpty()){
+                temp = new Auction(storage.getRandomItem());
+                stages[i] = temp;
+                Thread t = new Thread(temp);
+                t.start();
+            }
         }
     }
 
-    /**Sort item list so item with lower base price are sold first*/
-    private void sortByBasePrice(){
-        double highest = 0;
-        int change = 0;
-        Item temp;
-        double tempPrice;
-        while(change !=0) {
-            change = 0;
-            for (int i = 0; i < itemCount; i++) {
-                temp = items.get(i);
-                if ((tempPrice = temp.getBASEPRICE()) > highest) {
-                    highest = tempPrice;
-                    items.set(i, items.get(i + 1));
-                    items.set(i + 1, temp);
-                    change++;
-                }
+    /**Remove all auction houses that is over, and make new ones to replace them*/
+    private boolean removeStage(){
+        Auction stage;
+        boolean check = false;
+        for(int i = 0; i<itemCount; i++){
+            stage = stages[i];
+            if(stage.isAuctionEnd()){
+                /**Inform winning or/and replace item*/
+                stages[i] = null;
+                check = true;
             }
         }
+        return check;
     }
 
     /**Try to make bid*/
     public BidStatusMessage makeBid(Bid bid){
         Item i = bid.getItem();
         double price = bid.getPriceVal();
-        if(i.equals(stage.getItem()) && price > stage.getMaxBid()){
-            /**Request bank to check affordable
-             * If so make the bid, inform previous bid for outbid,
-             * and inform new bid for winning
-             * else reject agent
-             * */
-            if(true) {
-                stage.outBid(price,"");
+        Agent bidder = null;
+        int stageIndex = findStage(i);
+        if(stageIndex>-1) {
+            Auction stage = stages[stageIndex];
+            /**Check if the new bid amount is higher than current max bid*/
+            if (i.equals(stage.getItem()) && price > stage.getMaxBid()) {
+                /**Request bank to check affordable*/
+                if (true) {
+                    Agent currentBidder = stage.getCurrentAgent();
+                    /**Inform current bidder
+                     * outbid him with new bidder
+                     * reset 60 sec counter*/
+                    stage.outBid(price, bidder);
+                    stage.resetCount();
+                    return BidStatusMessage.ACCEPTED;
+                }
             }
         }
         return BidStatusMessage.REJECTED;
@@ -114,13 +146,22 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
     @Override
     public void run() {
         /**First Thing register at bank*/
+        //System.out.println("Auction House " + ID);
         registerAtBank();
         initialize();
-        System.out.println(toString());
         while(!Thread.interrupted()){
-            if(items.isEmpty()){
-                over = true;
-                break;
+            try{
+                if(!storage.isEmpty()){
+                    removeStage();
+                    addNewStage();
+                }else{
+                    System.out.println("Storage Empty, Auction House Closing!");
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+                Thread.sleep(1000);
+            }catch (InterruptedException e){
+                e.printStackTrace();
             }
         }
         deRegisterAtBank();
@@ -135,7 +176,10 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
     }
 
     public String toString(){
-        String s = "Auction House "+ID+"\n"+stage.toString()+"\n";
+        String s = "Auction House "+ID+"\n";
+        for(int i = 0; i< itemCount; i++){
+            s += stages[i].toString()+"\n";
+        }
         return s;
     }
 }
