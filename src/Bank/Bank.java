@@ -194,7 +194,7 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
             System.out.println("new bank() done, attempting to make stub");
             BankRemoteService stub = (BankRemoteService) UnicastRemoteObject.exportObject( (BankRemoteService) bankServer, 0);
             System.out.println(" now binding");
-            Registry registry = LocateRegistry.createRegistry(portNumber);
+            Registry registry = LocateRegistry.createRegistry(1099);
             registry.rebind("bankServer", stub);
             System.out.println("Server created... server running...");
         } catch (RemoteException ex) {
