@@ -92,4 +92,6 @@ public interface BankRemoteService extends java.rmi.Remote{
      * @return String reflecting the difference between the account balance and total of all blocked funds for the account
      */
     String getAvailableFundsString(String accountID);
+
+    public void remoteTest() throws RemoteException;
 }

@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Bank implements BankRemoteService { //extends UnicastRemoteObject
     //private static final long serialVersionUID = 1L; /** this needs to be changed to a specific long **/
     private static int currentId = 0;
-    private final static int portNumber = 12345; 
+    private final static int portNumber = 12345;
     //private ExecutorService threadRunner = Executors.newCachedThreadPool(); //service to run connected clients
     private ConcurrentHashMap<String, BankAccount> clientAccounts = new ConcurrentHashMap<String, BankAccount>();
     private List<String> agentNameList = new ArrayList<>();
@@ -77,7 +77,6 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
     public String getAvailableFundsString(String accountID) {
         return String.valueOf(clientAccounts.get(accountID).getAvailableBalance());
     }
-
     /**
      * checks if this clients account has sufficient funds for a bid.
      *
@@ -104,10 +103,13 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
      */
     @Override
     public String registerAgent(String name, double initialBalance) throws RemoteException {
+        System.out.println("Hey we're registering an agent!");
         agentNameList.add(name);
         BankAccount newAccount = new BankAccount(getNewId(), initialBalance);
         clientAccounts.put(newAccount.getAccountNumber(), newAccount);
-        return newAccount.getAccountNumber();
+        String accountNumber = newAccount.getAccountNumber();
+        if(accountNumber == null) System.out.println("account number was returned null");
+        return accountNumber;
     }
 
     /**
@@ -185,6 +187,11 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
 
     private synchronized String getNewId() {
         return Integer.toString(++currentId);
+    }
+
+    @Override
+    public void remoteTest(){
+        System.out.println("Hey you called this remotely!");
     }
 
     public static void main(String[] args) {
