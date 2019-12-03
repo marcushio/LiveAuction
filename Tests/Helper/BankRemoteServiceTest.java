@@ -14,6 +14,6 @@ class BankRemoteServiceTest {
     void getActiveAuctionHouseAddresses() throws RemoteException {
         Bank bank = new Bank();
         AuctionHouseRemoteService house = new AuctionHouse(new Storage("C:/Items.txt"));
-        bank.registerAuctionHouse(house.getID());
+        //bank.registerAuctionHouse(house.getID());
     }
 }

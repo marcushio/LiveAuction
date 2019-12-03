@@ -25,7 +25,7 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
     private List<String> agentNameList = new ArrayList<>();
     private List<String> auctionHouseAddresses = new ArrayList<>();
 
-    public Bank() throws RemoteException { }
+    //public Bank() throws RemoteException { }
 
 
     /**
@@ -105,8 +105,8 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
     @Override
     public String registerAgent(String name, double initialBalance) throws RemoteException {
         System.out.println("Hey we're registering an agent!");
-        agentNameList.add(name);
-        BankAccount newAccount = new BankAccount(getNewId(), initialBalance);
+        String newId = getNewId();
+        BankAccount newAccount = new BankAccount(newId, name, initialBalance);
         clientAccounts.put(newAccount.getAccountNumber(), newAccount);
         String accountNumber = newAccount.getAccountNumber();
         if(accountNumber == null) System.out.println("account number was returned null");
@@ -120,9 +120,7 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
      * @return an integer account number that the user will use to access their account
      */
     public String makeAccount(String name, Double initialBalance) throws RemoteException {
-        BankAccount newAccount = new BankAccount(getNewId(), initialBalance);
-        clientAccounts.put(newAccount.getAccountNumber(), newAccount);
-        return newAccount.getAccountNumber();
+        return registerAgent(name, initialBalance);
     }
 
 
@@ -134,10 +132,10 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
      * @throws RemoteException
      */
     @Override
-    public String registerAuctionHouse(String name) throws RemoteException {
-        BankAccount newAccount = new BankAccount(getNewId(), 0);
+    public String registerAuctionHouse(String address, String name) throws RemoteException {
+        BankAccount newAccount = new BankAccount(getNewId(), name, 0);
         clientAccounts.put(newAccount.getAccountNumber(), newAccount);
-        auctionHouseAddresses.add(name);
+        auctionHouseAddresses.add(address);
         return newAccount.getAccountNumber();
     }
 
@@ -155,25 +153,23 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
     /**
      * removes account associated with this client from the bank.
      *
-     * @param accountNumber
+     * @param accountId
      * @return true if we were able to deregister else false
      * @throws RemoteException
      */
     @Override
-    public boolean deregister(int accountNumber) throws RemoteException {
-        /*
-        if (clients.get(accountNumber) == null) {
+    public boolean deregister(String accountId) throws RemoteException {
+        //remove bank account
+        //remove auctionhouse from list
+        //remove
+        if (clientAccounts.get(accountId) == null) {
+            System.out.println("There was no account with that number");
             return false;
         }
-        Client auctionHouse = clients.get(accountNumber);
-        if (auctionHouse instanceof AuctionHouse) {
-            auctionList.remove(auctionHouse);
-        }
-        clientAccounts.remove(accountNumber);
-        clients.remove(accountNumber);
-        return true;
+        BankAccount toBeDeleted = clientAccounts.get(accountId);
+        //String name = toBeDeleted.get
+        clientAccounts.remove(accountId);
 
-         */
         return true;
     }
 
@@ -208,11 +204,6 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
         } catch (RemoteException ex) {
             System.err.println("Remote exception while making a new bank.");
         }
-        /*
-        catch (MalformedURLException ex) {
-            System.err.println("didn't form a correct URL for the server");
-        }
-         */
     }
 
 
