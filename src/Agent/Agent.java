@@ -25,7 +25,7 @@ import java.util.Set;
  * members through bindings and the Agent instance updates its other bound variables to reflect changes resulting
  * from processing those updates. Auction houses also update the bid status of each of an agent's bids.
  */
-public class Agent {
+public class Agent implements AgentRemoteService {
     private Set<Bid> bidsMade = new HashSet<>();
     private StringProperty userMessages = new SimpleStringProperty("");
     private StringProperty currentBidAmount = new SimpleStringProperty("0.00");

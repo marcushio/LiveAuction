@@ -18,5 +18,12 @@ public interface AuctionHouseRemoteService extends java.rmi.Remote {
      */
     public BidStatusMessage makeBid(Bid bid);
 
+    /**
+     * Return ID of auction house
+     * @return ID of auction house
+     */
+    public String getID();
+
+
 
 }
