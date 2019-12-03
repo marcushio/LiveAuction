@@ -108,8 +108,12 @@ public class Agent {
     }
 
     public void refreshBalances() {
-        currentBalanceProperty.set(bankService.getBalanceString(accountID));
-        availableFundsProperty.set(bankService.getAvailableFundsString(accountID));
+        try {
+            currentBalanceProperty.set(bankService.getBalanceString(accountID));
+            availableFundsProperty.set(bankService.getAvailableFundsString(accountID));
+        } catch(RemoteException ex){
+            System.err.println("couldn't refresh balance");
+        }
     }
 
     public void connect(String selectedHouseAddress) {
