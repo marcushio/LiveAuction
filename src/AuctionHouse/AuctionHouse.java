@@ -5,6 +5,9 @@ import Helper.*;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -59,6 +62,18 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
 
     /**Add items and stuff*/
     private void initialize(){
+        try {
+            System.out.println("making Auction House...");
+            AuctionHouseRemoteService thisServer = this;
+            AuctionHouseRemoteService stub = (AuctionHouseRemoteService)
+                    UnicastRemoteObject.exportObject(thisServer, 0);
+            System.out.println("Auction House made now binding");
+            Registry registry = LocateRegistry.createRegistry(1099);
+            registry.rebind("Auction House" + ID, stub);
+            System.out.println("Server created... server running...");
+        } catch (RemoteException ex) {
+            System.err.println("Remote exception while making new Auction House");
+        }
 /*        try {
             AuctionHouseRemoteService thisServer = this;
             Naming.rebind("//127.0.0.1/"+ID, thisServer);
@@ -155,7 +170,6 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
     @Override
     public void run() {
         /**First Thing register at bank*/
-        //System.out.println("Auction House " + ID);
         registerAtBank();
         initialize();
         while(!Thread.interrupted()){
