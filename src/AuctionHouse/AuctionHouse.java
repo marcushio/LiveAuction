@@ -2,8 +2,6 @@ package AuctionHouse;
 
 import Agent.Agent;
 import Helper.*;
-import java.net.MalformedURLException;
-import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -46,7 +44,7 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
     public List<Item> getListedItems() {
         List<Item> items = new ArrayList<>();
         for(int i = 0; i<3; i++){
-            items.add(stages[0].getItem());
+            items.add(stages[i].getItem());
         }
         return items;
     }
@@ -60,29 +58,21 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
         return ID;
     }
 
-    /**Add items and stuff*/
+    /**make the remote server*/
     private void initialize(){
-        try {
-            System.out.println("making Auction House...");
-            AuctionHouseRemoteService thisServer = this;
-            AuctionHouseRemoteService stub = (AuctionHouseRemoteService)
-                    UnicastRemoteObject.exportObject(thisServer, 0);
-            System.out.println("Auction House made now binding");
-            Registry registry = LocateRegistry.createRegistry(1099);
-            registry.rebind("Auction House" + ID, stub);
-            System.out.println("Server created... server running...");
-        } catch (RemoteException ex) {
-            System.err.println("Remote exception while making new Auction House");
-        }
-/*        try {
-            AuctionHouseRemoteService thisServer = this;
-            Naming.rebind("//127.0.0.1/"+ID, thisServer);
-            System.out.println("Server created... server running...");
-        } catch (RemoteException ex) {
-            System.err.println("Remote exception while making a Auction House");
-        } catch (MalformedURLException ex) {
-            System.err.println("didn't form a correct URL for the server");
-        }*/
+            try {
+                System.out.println("making AH"+ID+"...");
+                AuctionHouseRemoteService thisServer = this;
+                AuctionHouseRemoteService stub = (AuctionHouseRemoteService)
+                        UnicastRemoteObject.exportObject((AuctionHouseRemoteService)thisServer, 0);
+                System.out.println("AH made now binding");
+                Registry registry = LocateRegistry.createRegistry(1099);
+                registry.rebind(ID, stub);
+                System.out.println("Server created... server running...");
+            } catch (RemoteException ex) {
+                System.err.println("Remote exception while making a new AH.");
+                System.out.println(ex.getMessage());
+            }
     }
 
     public int findStage(Item item){

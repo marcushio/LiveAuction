@@ -1,5 +1,6 @@
 package Helper;
 
+import java.rmi.RemoteException;
 import java.util.List;
 
 public interface AuctionHouseRemoteService extends java.rmi.Remote {
@@ -8,7 +9,7 @@ public interface AuctionHouseRemoteService extends java.rmi.Remote {
      *
      * @return a list of items from the auction house
      */
-    public List<Item> getListedItems();
+    public List<Item> getListedItems() throws RemoteException;
 
     /**
      * Accept a bid and return a status message based on how the bid is doing in the auction
@@ -16,13 +17,13 @@ public interface AuctionHouseRemoteService extends java.rmi.Remote {
      * @param bid
      * @return StatusMessage specifying how the bid is doing
      */
-    public BidStatusMessage makeBid(Bid bid);
+    public BidStatusMessage makeBid(Bid bid) throws RemoteException;
 
     /**
      * Return ID of auction house
      * @return ID of auction house
      */
-    public String getID();
+    public String getID() throws RemoteException;
 
 
 

@@ -77,7 +77,7 @@ public class Gui extends Application {
         return container;
     }
 
-    private VBox makeBidAndBalanceColumn(){
+    private VBox makeBidAndBalanceColumn() {
         VBox column = new VBox();
         refreshBalance = new Button("Refresh");
         submitBid = new Button("Bid!");
@@ -107,7 +107,12 @@ public class Gui extends Application {
     }
 
     private void handleSubmitBid() {
-        agent.submitBid();
+        try {
+            agent.submitBid();
+        }
+        catch(RemoteException e){
+
+        }
     }
 
 
@@ -176,7 +181,12 @@ public class Gui extends Application {
         }
     }
     private void handleRefreshItems(){
-        agent.refreshItemList();
+        try {
+            agent.refreshItemList();
+        }
+        catch(RemoteException e){
+
+        }
     }
     private void handleRefreshBalances() {
         agent.refreshBalances();

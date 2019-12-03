@@ -1,12 +1,14 @@
 package AuctionHouse;
 
 import java.io.IOException;
+import java.rmi.RemoteException;
 
 /**Main loop that keeps track of all auction houses*/
 public class AuctionHost implements Runnable{
     private AuctionHouse[] auctionHouses = new AuctionHouse[3];
     private static String book = "E:/DistributedAuction/src/Items.txt";
     private static Storage storage;
+    public int portNumber = 1099;
 
     public AuctionHost(String book){
         this.book = book;
@@ -24,7 +26,7 @@ public class AuctionHost implements Runnable{
         }
     }
 
-    /**Make new auction houses to replace the dead ones*/
+   /* *//**Make new auction houses to replace the dead ones*//*
     private void addAuctionHouse(){
         AuctionHouse temp;
         for(int i = 0; i<auctionHouses.length; i++){
@@ -37,7 +39,7 @@ public class AuctionHost implements Runnable{
         }
     }
     
-    /**Remove all auction houses that is over, and make new ones to replace them*/
+    *//**Remove all auction houses that is over, and make new ones to replace them*//*
     private boolean removeAuctionHouse(){
         AuctionHouse a;
         for(int i = 0; i<auctionHouses.length; i++){
@@ -49,7 +51,7 @@ public class AuctionHost implements Runnable{
         }
         return false;
     }
-
+*/
     @Override
     public synchronized void run(){
         initialize();

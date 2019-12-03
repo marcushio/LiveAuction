@@ -82,7 +82,8 @@ public class Agent implements AgentRemoteService {
             userMessages.set("Failed to connect to bank.");
         }
     }
-    public void refreshItemList(){
+    public void refreshItemList() throws RemoteException{
+        /**Throw remote exception here*/
         List<Item> items = selectedHouse.getListedItems();
         List<String> itemStrings = new ArrayList<>();
         for(Item item : items){
@@ -140,7 +141,7 @@ public class Agent implements AgentRemoteService {
         return currentBidAmount;
     }
 
-    public void submitBid() {
+    public void submitBid() throws RemoteException{
         Bid bid = new Bid(selectedItemProperty.get(),Double.parseDouble(currentBidAmount.get()));
         bid.setHouseAddress(selectedHouseProperty.get());
         BidStatusMessage status = selectedHouse.makeBid(bid);
