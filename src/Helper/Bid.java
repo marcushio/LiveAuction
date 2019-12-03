@@ -11,6 +11,7 @@ import java.io.Serializable;
  */
 public class Bid implements Serializable {
     private String itemID;
+    private String agentAddress;
     private double dollarAmount= 0.00;
     private String houseAddress = "";
     private BidStatusMessage status = BidStatusMessage.REJECTED;

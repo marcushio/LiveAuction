@@ -46,7 +46,7 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
     }
 
     /**Return the ID of this auction house*/
-    protected String getID(){
+    public String getID(){
         return ID;
     }
 
