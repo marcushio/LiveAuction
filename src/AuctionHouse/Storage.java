@@ -16,7 +16,7 @@ public class Storage {
         BOOK = book;
     }
 
-    protected void initialize() throws IOException {
+    public void initialize() throws IOException {
         BufferedReader maze = null;
         String line;
         int rarity = 1;

@@ -77,7 +77,7 @@ public class Gui extends Application {
         return container;
     }
 
-    private VBox makeBidAndBalanceColumn(){
+    private VBox makeBidAndBalanceColumn() {
         VBox column = new VBox();
         refreshBalance = new Button("Refresh");
         submitBid = new Button("Bid!");
@@ -107,7 +107,12 @@ public class Gui extends Application {
     }
 
     private void handleSubmitBid() {
-        agent.submitBid();
+        try {
+            agent.submitBid();
+        }
+        catch(RemoteException e){
+
+        }
     }
 
 
@@ -163,7 +168,8 @@ public class Gui extends Application {
 
     private void handleParams(){
         List<String> params = getParameters().getRaw();
-        if(params.get(0).matches("[0-9]*.[0-9][0-9]"))
+        if(params.get(0).matches("[0-9]*.[0-9][0-9]")&&params.size()>0)
+        if(params.get(0).matches("[0-9]*.[0-9][0-9]")&&params.size()>0)
         {
             String name = "";
             for(int i = 1; i < params.size(); i++){
@@ -176,7 +182,12 @@ public class Gui extends Application {
         }
     }
     private void handleRefreshItems(){
-        agent.refreshItemList();
+        try {
+            agent.refreshItemList();
+        }
+        catch(RemoteException e){
+
+        }
     }
     private void handleRefreshBalances() {
         agent.refreshBalances();
