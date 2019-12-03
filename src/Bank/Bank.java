@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Bank implements BankRemoteService { //extends UnicastRemoteObject
     //private static final long serialVersionUID = 1L; /** this needs to be changed to a specific long **/
     private static int currentId = 0;
-    private final static int portNumber = 12345; 
+    private final static int portNumber = 12345;
     //private ExecutorService threadRunner = Executors.newCachedThreadPool(); //service to run connected clients
     private ConcurrentHashMap<String, BankAccount> clientAccounts = new ConcurrentHashMap<String, BankAccount>();
     private List<String> agentNameList = new ArrayList<>();
@@ -64,7 +64,8 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
      * @param accountID ID of client requesting balance
      * @return String reflecting the total account balance of the account
      */
-    public String getBalanceString(String accountID) {
+    @Override
+    public String getBalanceString(String accountID) throws RemoteException{
         return String.valueOf(clientAccounts.get(accountID).getTotalBalance());
     }
 
@@ -74,10 +75,9 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
      * @param accountID ID of client requesting balance
      * @return String reflecting the difference between the account balance and total of all blocked funds for the account
      */
-    public String getAvailableFundsString(String accountID) {
+    public String getAvailableFundsString(String accountID) throws RemoteException{
         return String.valueOf(clientAccounts.get(accountID).getAvailableBalance());
     }
-
     /**
      * checks if this clients account has sufficient funds for a bid.
      *
@@ -104,10 +104,13 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
      */
     @Override
     public String registerAgent(String name, double initialBalance) throws RemoteException {
+        System.out.println("Hey we're registering an agent!");
         agentNameList.add(name);
         BankAccount newAccount = new BankAccount(getNewId(), initialBalance);
         clientAccounts.put(newAccount.getAccountNumber(), newAccount);
-        return newAccount.getAccountNumber();
+        String accountNumber = newAccount.getAccountNumber();
+        if(accountNumber == null) System.out.println("account number was returned null");
+        return accountNumber;
     }
 
     /**
@@ -187,15 +190,21 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
         return Integer.toString(++currentId);
     }
 
+    @Override
+    public void remoteTest(){
+        System.out.println("Hey you called this remotely!");
+    }
+
     public static void main(String[] args) {
         try {
             System.out.println("making bank...");
             BankRemoteService bankServer = new Bank();
             BankRemoteService stub = (BankRemoteService) UnicastRemoteObject.exportObject( (BankRemoteService) bankServer, 0);
             System.out.println("bank made now binding");
-            Registry registry = LocateRegistry.createRegistry(portNumber);
+            Registry registry = LocateRegistry.createRegistry(1099);
             registry.rebind("bankServer", stub);
             System.out.println("Server created... server running...");
+
         } catch (RemoteException ex) {
             System.err.println("Remote exception while making a new bank.");
         }

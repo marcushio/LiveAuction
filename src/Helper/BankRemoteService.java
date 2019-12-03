@@ -77,19 +77,22 @@ public interface BankRemoteService extends java.rmi.Remote{
      * @param itemId is the id of the item the funds were blocked for.
      * @return true if funds were transferred and false otherwise
      */
-    public boolean transferBlockedFunds(String accountNumber, String itemID) throws RemoteException;
+    public boolean transferBlockedFunds(String accountNumber, String itemId) throws RemoteException;
 
     /**
      * Return a String reflecting the total account balance of the account with the given ID
      * @param accountID ID of client requesting balance
      * @return String reflecting the total account balance of the account
      */
-    String getBalanceString(String accountID);
+    String getBalanceString(String accountID) throws RemoteException;
 
     /**
      * Return a String reflecting the available funds of the account with the given ID
      * @param accountID ID of client requesting balance
      * @return String reflecting the difference between the account balance and total of all blocked funds for the account
      */
-    String getAvailableFundsString(String accountID);
+    String getAvailableFundsString(String accountID) throws RemoteException;
+
+    public void remoteTest() throws RemoteException;
+
 }
