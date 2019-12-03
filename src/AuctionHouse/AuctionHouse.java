@@ -23,13 +23,20 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
     private String acountNumber;
     private boolean over = false;
     private boolean balance;
-    private BlockingQueue<AuctionMessage> internal = new LinkedBlockingDeque<>();
+    private BlockingQueue<Bid> internal = new LinkedBlockingDeque<>();
 
     /**Constructs auction house with a unique ID*/
     public AuctionHouse(Storage storage){
         this.storage = storage;
         ID = UUID.randomUUID().toString();
         stages = new Auction[itemCount];
+        Auction temp;
+        for(int i = 0; i<itemCount;i++){
+            temp = new Auction(storage.getRandomItem());
+            stages[i] = temp;
+            Thread t = new Thread(temp);
+            t.start();
+        }
     }
 
     /**Return a list of items in this Auction*/
@@ -46,19 +53,12 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
     }
 
     /**Return the ID of this auction house*/
-    protected String getID(){
+    public String getID(){
         return ID;
     }
 
     /**Add items and stuff*/
     private void initialize(){
-        Auction temp;
-        for(int i = 0; i<itemCount;i++){
-            temp = new Auction(storage.getRandomItem());
-            stages[i] = temp;
-            Thread t = new Thread(temp);
-            t.start();
-        }
 /*        try {
             AuctionHouseRemoteService thisServer = this;
             Naming.rebind("//127.0.0.1/"+ID, thisServer);
@@ -105,6 +105,15 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
             }
         }
         return check;
+    }
+
+    /**Remote method for agent to send a bid*/
+    public void sendBid(Bid bid){
+        try {
+            internal.put(bid);
+        }catch(InterruptedException e){
+            e.printStackTrace();
+        }
     }
 
     /**Try to make bid*/
@@ -182,4 +191,5 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
         }
         return s;
     }
+
 }
