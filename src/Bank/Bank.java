@@ -64,7 +64,8 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
      * @param accountID ID of client requesting balance
      * @return String reflecting the total account balance of the account
      */
-    public String getBalanceString(String accountID) {
+    @Override
+    public String getBalanceString(String accountID) throws RemoteException{
         return String.valueOf(clientAccounts.get(accountID).getTotalBalance());
     }
 
@@ -74,7 +75,7 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
      * @param accountID ID of client requesting balance
      * @return String reflecting the difference between the account balance and total of all blocked funds for the account
      */
-    public String getAvailableFundsString(String accountID) {
+    public String getAvailableFundsString(String accountID) throws RemoteException{
         return String.valueOf(clientAccounts.get(accountID).getAvailableBalance());
     }
     /**
