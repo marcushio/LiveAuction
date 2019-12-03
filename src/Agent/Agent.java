@@ -174,4 +174,12 @@ public class Agent implements AgentRemoteService {
             bidList.add(bid.toString());
         }
     }
+
+    public void register(BankRemoteService bankService) throws RemoteException {
+        accountID = bankService.registerAgent(getName().toString(),liquidFunds);
+    }
+
+    public String getAccountID() {
+        return accountID;
+    }
 }
