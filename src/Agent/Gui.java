@@ -12,6 +12,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+
+import java.rmi.RemoteException;
 import java.util.List;
 
 public class Gui extends Application {
@@ -30,9 +32,8 @@ public class Gui extends Application {
         launch(args);
     }
     @Override
-    public void start(Stage primaryStage){
-        List<String> params = getParameters().getRaw();
-        agent = new Agent(params.get(0), params.get(1));
+    public void start(Stage primaryStage) throws RemoteException {
+        handleParams();
         makeLayout();
         setWindow();
         primaryStage.setScene(scene);
@@ -158,6 +159,21 @@ public class Gui extends Application {
 
     private void handleRefreshBids() {
         agent.refreshBidList();
+    }
+
+    private void handleParams(){
+        List<String> params = getParameters().getRaw();
+        if(params.get(0).matches("[0-9]*.[0-9][0-9]"))
+        {
+            String name = "";
+            for(int i = 1; i < params.size(); i++){
+                name += params.get(i) + " ";
+            }
+            agent = new Agent(name,params.get(0));
+        }
+        else {
+            agent = new Agent("Unknown", "0.00");
+        }
     }
     private void handleRefreshItems(){
         agent.refreshItemList();

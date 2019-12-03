@@ -54,8 +54,10 @@ public class AuctionHost implements Runnable{
     public synchronized void run(){
         initialize();
         while(!Thread.interrupted()){
-            if(removeAuctionHouse()){
-                addAuctionHouse();
+            try{
+                Thread.sleep(1000);
+            }catch (InterruptedException e){
+                e.printStackTrace();
             }
         }
     }
@@ -67,12 +69,6 @@ public class AuctionHost implements Runnable{
         }
         AuctionHost host = new AuctionHost(book);
         host.storage.initialize();
-/*        Item temp;
-        for(int i = 0; i<storage.regulars.size(); i++){
-            temp = storage.regulars.get(i);
-            System.out.println(temp.getNAME()+" $"+temp.getBASEPRICE());
-        }*/
-
         Thread t = new Thread(host);
         t.start();
     }

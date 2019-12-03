@@ -20,7 +20,8 @@ public class Item{
         NAME = name;
         ID = UUID.randomUUID().toString();
         RARITY = rarity;
-        BASEPRICE = (int)(Math.pow(10,RARITY)*(int)((Math.random()*10)+1)*3.1415926*(Math.random()));
+        BASEPRICE = (int)(Math.pow(10,RARITY)*(int)
+                ((Math.random()*10)+1)*3.1415926*(Math.random()));
     }
 
     public String getNAME(){

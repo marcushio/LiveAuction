@@ -14,6 +14,7 @@ import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -22,9 +23,9 @@ import java.util.Set;
 /**
  * Agent is the model used by Gui. It interacts with the servers. The Gui instance updates Agent's appropriate
  * members through bindings and the Agent instance updates its other bound variables to reflect changes resulting
- * from processing those updates. Agent also listens for updates from the various
+ * from processing those updates. Auction houses also update the bid status of each of an agent's bids.
  */
-public class Agent {
+public class Agent implements AgentRemoteService {
     private Set<Bid> bidsMade = new HashSet<>();
     private StringProperty userMessages = new SimpleStringProperty("");
     private StringProperty currentBidAmount = new SimpleStringProperty("0.00");
@@ -43,25 +44,25 @@ public class Agent {
     private StringProperty selectedItemProperty = new SimpleStringProperty("NONE");
     private BankRemoteService bankService;
 
-    public Agent(String name, String liquidFunds){
+    public Agent(String name, String liquidFunds) {
         this.name.set(name);
         this.liquidFunds = Double.parseDouble(liquidFunds);
-        try {
-            bankService = (BankRemoteService) Naming.lookup("bankServer");
-        }
-        catch(IOException | NotBoundException e){
-            System.out.println("IO Exception Could not connect to bank");
-        }
-//        catch(NotBoundException e){
-//            System.out.println("Not bound exception");
+//       try {
+//            bankService = (BankRemoteService) Naming.lookup("bankServer");
 //        }
-       // accountNumber = bankService.registerAgent(name, liquidFunds);
-        try{
-           accountID = bankService.registerAgent(name,Double.valueOf(liquidFunds));
-        }
-        catch(RemoteException e){
-
-        }
+//        catch(IOException e){
+//            userMessages.set("IO Exception Could not connect to bank");
+//        }
+//        catch(NotBoundException e){
+//            userMessages.set("Not bound exception");
+//     }
+//       // accountNumber = bankService.registerAgent(name, liquidFunds);
+//        try{
+//           accountID = bankService.registerAgent(name,Double.valueOf(liquidFunds));
+//        }
+//        catch(RemoteException e){
+//
+//        }
     }
 
     public ObservableList<String> getItemStringList(){
@@ -78,7 +79,7 @@ public class Agent {
             auctionHouseList.addAll(houseAddresses);
         }
         catch (RemoteException e){
-            System.out.println("Failed to connect to bank.");
+            userMessages.set("Failed to connect to bank.");
         }
     }
     public void refreshItemList(){
@@ -121,13 +122,13 @@ public class Agent {
             selectedHouse = (AuctionHouseRemoteService) Naming.lookup(selectedHouseAddress);
         }
         catch(NotBoundException e){
-            System.out.println("NOT BOUND ISSUE WITH HOUSE");
+            userMessages.set("NOT BOUND ISSUE WITH HOUSE");
         }
         catch(RemoteException e){
-            System.out.println("REMOTE HOUSE COULDN'T BE REACHED");
+            userMessages.set("REMOTE HOUSE COULDN'T BE REACHED");
         }
         catch(MalformedURLException e){
-            System.out.println("BAD URL");
+            userMessages.set("BAD URL");
         }
     }
 
@@ -154,7 +155,7 @@ public class Agent {
      * Change the BidStatusMessage of the bid. This should be called when a bid's status changes in an AuctionHouse instance
      * @param bid Bid whose status is to be changed.
      */
-    public void updateBid(Bid bid){
+    public void updateBid(Bid bid) throws RemoteException{
         bidsMade.add(bid);
         refreshBidList();
     }

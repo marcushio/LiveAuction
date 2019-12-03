@@ -48,7 +48,7 @@ public interface BankRemoteService extends java.rmi.Remote{
     /**
      * Delete account of given account number, and transfer amount in the account
      * to the corresponding auction house/agent
-     * Need to check if auction house/agent have items on bid
+     * Need to check if auction house/agent have items on bid and reject if they do
      * @param accountNumber Identity
      * @return true if deregister successful, else return false
      */
