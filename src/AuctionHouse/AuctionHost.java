@@ -6,9 +6,9 @@ import java.rmi.RemoteException;
 /**Main loop that keeps track of all auction houses*/
 public class AuctionHost implements Runnable{
     private AuctionHouse[] auctionHouses = new AuctionHouse[3];
-    private static String book = "E:/DistributedAuction/src/Items.txt";
+    private static String book = "C:/Items.txt";
     private static Storage storage;
-    public int portNumber = 1099;
+    public static int portNumber = 1099;
 
     public AuctionHost(String book){
         this.book = book;

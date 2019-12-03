@@ -21,6 +21,7 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
     /**Object containing all items*/
     private Storage storage;
     public Auction[] stages;
+    private int portNumber;
     private String acountNumber;
     private boolean over = false;
     private boolean balance;
@@ -41,9 +42,9 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
     }
 
     /**Return a list of items in this Auction*/
-    public List<Item> getListedItems() {
+    public List<Item> getListedItems() throws RemoteException{
         List<Item> items = new ArrayList<>();
-        for(int i = 0; i<3; i++){
+        for (int i = 0; i < 3; i++) {
             items.add(stages[i].getItem());
         }
         return items;
@@ -66,7 +67,7 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
                 AuctionHouseRemoteService stub = (AuctionHouseRemoteService)
                         UnicastRemoteObject.exportObject((AuctionHouseRemoteService)thisServer, 0);
                 System.out.println("AH made now binding");
-                Registry registry = LocateRegistry.createRegistry(1099);
+                Registry registry = LocateRegistry.createRegistry(AuctionHost.portNumber++);
                 registry.rebind(ID, stub);
                 System.out.println("Server created... server running...");
             } catch (RemoteException ex) {
