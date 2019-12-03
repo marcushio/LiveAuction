@@ -163,7 +163,8 @@ public class Gui extends Application {
 
     private void handleParams(){
         List<String> params = getParameters().getRaw();
-        if(params.get(0).matches("[0-9]*.[0-9][0-9]"))
+        if(params.get(0).matches("[0-9]*.[0-9][0-9]")&&params.size()>0)
+        if(params.get(0).matches("[0-9]*.[0-9][0-9]")&&params.size()>0)
         {
             String name = "";
             for(int i = 1; i < params.size(); i++){
