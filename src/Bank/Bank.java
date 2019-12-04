@@ -9,6 +9,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -66,7 +67,10 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
      */
     @Override
     public String getBalanceString(String accountID) throws RemoteException{
-        return String.valueOf(clientAccounts.get(accountID).getTotalBalance());
+        double balance = clientAccounts.get(accountID).getTotalBalance();
+        DecimalFormat formatter = new DecimalFormat("#.00");
+        String formattedBalance = formatter.format(balance);
+        return formattedBalance;
     }
 
     /**
@@ -76,7 +80,10 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
      * @return String reflecting the difference between the account balance and total of all blocked funds for the account
      */
     public String getAvailableFundsString(String accountID) throws RemoteException{
-        return String.valueOf(clientAccounts.get(accountID).getAvailableBalance());
+        double availableBalance = clientAccounts.get(accountID).getAvailableBalance();
+        DecimalFormat formatter = new DecimalFormat("#.00");
+        String formattedBalance = formatter.format(availableBalance);
+        return formattedBalance;
     }
     /**
      * checks if this clients account has sufficient funds for a bid.
