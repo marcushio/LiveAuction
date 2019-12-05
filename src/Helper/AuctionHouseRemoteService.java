@@ -17,7 +17,7 @@ public interface AuctionHouseRemoteService extends java.rmi.Remote {
      * @param bid
      * @return StatusMessage specifying how the bid is doing
      */
-    public BidStatusMessage makeBid(Bid bid) throws RemoteException;
+    public void makeBid(Bid bid) throws RemoteException;
 
     /**
      * Return ID of auction house
