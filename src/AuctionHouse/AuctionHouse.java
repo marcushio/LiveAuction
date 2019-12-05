@@ -29,6 +29,7 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
     private String acountNumber;
     private static boolean over = false;
     private boolean balance;
+    /**Queue of bid objects to process*/
     private BlockingQueue<Bid> internal = new LinkedBlockingDeque<>();
     private static Scanner scanner = new Scanner(System.in);
 
@@ -222,15 +223,15 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
     }
 
     public static void main(String args[]) throws IOException {
-        if(args.length > 0){
+        if(args.length > 0) {
             portNumber = Integer.parseInt(args[0]);
+            Storage storage = new Storage(book);
+            storage.initialize();
+            AuctionHouse auctionHouse = new AuctionHouse(storage);
+            Thread t = new Thread(auctionHouse);
+            t.start();
+            exit();
         }
-        Storage storage = new Storage(book);
-        storage.initialize();
-        AuctionHouse auctionHouse = new AuctionHouse(storage);
-        Thread t = new Thread(auctionHouse);
-        t.start();
-        exit();
     }
 
 }
