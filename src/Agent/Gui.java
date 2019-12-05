@@ -44,7 +44,7 @@ public class Gui extends Application {
             handleParams();
         }
         catch(Exception e){
-            
+
         }
         bindVariables(agent);
     }
