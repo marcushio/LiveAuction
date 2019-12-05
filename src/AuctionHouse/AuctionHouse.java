@@ -36,7 +36,7 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
     /**Queue of bid objects to process*/
     private BlockingQueue<Bid> internal = new LinkedBlockingDeque<>();
     private static Scanner scanner = new Scanner(System.in);
-
+    private ArrayList<Item> itemSolde = new ArrayList<>();
     private BankRemoteService bankService;
     private String bankName;
     private String bankIP;
@@ -48,10 +48,6 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
         this.storage = storage;
         ID = UUID.randomUUID().toString();
         stages = new Auction[itemCount];
-    }
-
-    public void setPortNumber(int portNumber){
-        this.portNumber = portNumber;
     }
 
     /**Return a list of items in this Auction*/
@@ -131,7 +127,7 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
     }
 
     /**Remote method for agent to send a bid*/
-    public void sendBid(Bid bid){
+    public void makeBid(Bid bid){
         try {
             internal.put(bid);
         }catch(InterruptedException e){
@@ -139,8 +135,9 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
         }
     }
 
-    /**Try to make bid*/
-    public BidStatusMessage makeBid(Bid bid){
+    /**Try process bid*/
+    public void processBid() throws InterruptedException{
+        Bid bid = internal.take();
         Item i = bid.getItem();
         double price = bid.getPriceVal();
         Agent bidder = null;
@@ -157,11 +154,11 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
                      * reset 60 sec counter*/
                     stage.outBid(price, bidder);
                     stage.resetCount();
-                    return BidStatusMessage.ACCEPTED;
                 }
             }
+        }else{
+            /**Notify item not exist*/
         }
-        return BidStatusMessage.REJECTED;
     }
 
     /**Register an account at bank with ID(Used as account ID?)*/
@@ -210,14 +207,15 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
         initialize();
         while(!Thread.interrupted()){
             try{
-                if(!storage.isEmpty()){
+                processBid();
+                /*if(!storage.isEmpty()){
                     removeStage();
                     addNewStage();
                 }else{
                     System.out.println("Storage Empty, Auction House Closing!");
                     Thread.currentThread().interrupt();
                     break;
-                }
+                }*/
                 Thread.sleep(1000);
             }catch (InterruptedException e){
                 e.printStackTrace();
@@ -242,21 +240,37 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
         return s;
     }
 
-    private static void exit(){
+    /**Check if there are bids going on
+     * @return true if we can deregister, else return false*/
+    private boolean deregisterable(){
+        Auction curr;
+        for(int i = 0; i<itemCount;i++){
+            curr = stages[i];
+            if(curr != null) {
+                /**Change this to check if there is bid going on*/
+                if (curr.bidGoingOn()){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private void userInterface(){
         String response = scanner.next();
         if(response.equals("exit") || response.equals("x")){
             /**Try deregister at bank
              * if succeed, exit program
              * else recursively call exsit*/
-            System.out.println("ending program");
-            if(true){
+            if(deregisterable()){
                 Thread.currentThread().interrupt();
+
                 System.exit(0);
             }else{
-                exit();
+                userInterface();
             }
         }else{
-            exit();
+            userInterface();
         }
     }
 
@@ -268,7 +282,7 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
             AuctionHouse auctionHouse = new AuctionHouse(storage);
             Thread t = new Thread(auctionHouse);
             t.start();
-            exit();
+            auctionHouse.userInterface();
         }
     }
 
