@@ -49,6 +49,12 @@ public class Storage {
     }
 
 
+    protected void putBack(Item i){
+        i.reduceBASPRICE();
+        items.add(i);
+
+    }
+
     public boolean isEmpty(){
         if(items.isEmpty()){
             return true;
