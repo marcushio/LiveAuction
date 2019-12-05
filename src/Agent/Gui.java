@@ -27,10 +27,31 @@ public class Gui extends Application {
     private Button refreshBalance, submitBid, refreshBids, selectItem, refreshHousesList, selectHouse;
     private Text balance, availableFunds, selectedItem, selectedHouse, name;
     private static TextArea userMessages = new TextArea("");
-    Agent agent;
+    private static Agent agent;
 
     public static void main (String [] args){
-            launch(args);
+        launch(args);
+        if(args.length>2)
+        {
+            String startingFunds = args[0];
+            String bankAddress = args[args.length-1];
+            String name = "";
+            for(int i = 1; i < args.length-1; i++){
+                name += args[i] + " ";
+            }
+            try {
+                agent = new Agent(name, startingFunds, bankAddress);
+                agent.registerWithRMI();
+            }
+            catch(Exception e){
+
+            }
+
+        }
+
+    }
+    public void setAgent(Agent agent){
+        this.agent = agent;
     }
     @Override
     public void start(Stage primaryStage) {
@@ -44,11 +65,10 @@ public class Gui extends Application {
             handleParams();
         }
         catch(Exception e){
-            
+            userMessages.setText("Issue with agent initialziation.");
         }
-        bindVariables(agent);
     }
-    private void bindVariables(Agent agent){
+    public void bindVariables(Agent agent){
         name.textProperty().set(agent.getName().get());
         balance.textProperty().bind(agent.getCurrentBalanceProperty());
         availableFunds.textProperty().bind(agent.getAvailableFundsProperty());
