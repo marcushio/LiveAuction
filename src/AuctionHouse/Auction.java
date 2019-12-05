@@ -54,16 +54,16 @@ public class Auction implements Runnable{
     }
 
     public void run(){
-        System.out.println(item.getNAME()+" $"+maxBid);
+        System.out.println("    "+item.getNAME()+" $"+maxBid);
         while(!Thread.interrupted()){
             try{
-                if(waitCount == 3){
+                if(waitCount == 60){
                     /**If some one bid on the item*/
                     if(agent != null){
                         winningBid = maxBid;
                         /**Tell auction house the winning bidder/item/price*/
                     }else{
-                        System.out.println("No one bids on "+item.getNAME());
+                        System.out.println("    No one bids on "+item.getNAME());
                         /**No one bid on this item, tell auction house to
                          * replace it with a new item*/
                     }

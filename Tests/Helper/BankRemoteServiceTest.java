@@ -21,9 +21,6 @@ class BankRemoteServiceTest {
         Storage storage = new Storage("C:/Items.txt");
         storage.initialize();
         AuctionHouse house = new AuctionHouse(storage);
-        bank.registerAuctionHouse("fake");
-        bank.registerAuctionHouse("fake1");
-        bank.registerAuctionHouse("fake2");
         List<String> adresses = bank.getActiveAuctionHouseAddresses();
     }
 
@@ -32,7 +29,7 @@ class BankRemoteServiceTest {
     public void testAgentRegistration() throws RemoteException {
         String liquidFunds = "1.00";
         Agent agent = new Agent("Colton", liquidFunds);
-        BankRemoteService bankService = new Bank();
+        Bank bankService = new Bank();
         agent.register(bankService);
         System.out.println(agent.getAccountID());
         System.out.println(bankService.getBalanceString(agent.getAccountID()));
