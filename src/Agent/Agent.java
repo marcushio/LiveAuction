@@ -14,6 +14,8 @@ import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -50,6 +52,7 @@ public class Agent implements AgentRemoteService {
      * Make new agent instance with given name and a starting amount of funds and register it with the bank.
      * @param name String specifying the agent's name. Can include first or full name.
      * @param liquidFunds String specifying a dollar amount. Should be a float type with two decimal places
+     * @parma bankAddress address of bank
      */
     public Agent(String name, String liquidFunds, String bankAddress) {
         this.name.set(name);
@@ -85,15 +88,16 @@ public class Agent implements AgentRemoteService {
             e.printStackTrace();
         }
 
-
-
-
-
-
-
         ///////////////////////////////
     }
 
+    public void registerWithRMI() throws RemoteException{
+            AgentRemoteService thisService = this;
+            AgentRemoteService stub = (AgentRemoteService) UnicastRemoteObject.exportObject( (AgentRemoteService) thisService, 0);
+            Registry registry = LocateRegistry.createRegistry(1099);
+            registry.rebind("agentServer", stub);
+            System.out.println("Server created... server running...");
+    }
     public ObservableList<String> getItemStringList(){
         return itemList;
     }

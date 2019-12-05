@@ -40,7 +40,12 @@ public class Gui extends Application {
         primaryStage.setMaximized(true);
         primaryStage.setTitle("Auction App");
         primaryStage.show();
-        handleParams();
+        try {
+            handleParams();
+        }
+        catch(Exception e){
+            
+        }
         bindVariables(agent);
     }
     private void bindVariables(Agent agent){
@@ -167,17 +172,18 @@ public class Gui extends Application {
         agent.refreshBidList();
     }
 
-    private void handleParams() {
+    private void handleParams() throws Exception {
         List<String> params = getParameters().getRaw();
         if(params.size()>2)
         {
             String startingFunds = params.get(0);
             String bankAddress = params.get(params.size()-1);
             String name = "";
-            for(int i = 1; i < params.size()-2; i++){
+            for(int i = 1; i < params.size()-1; i++){
                 name += params.get(i) + " ";
             }
             agent = new Agent(name,startingFunds,bankAddress);
+            agent.registerWithRMI();
         }
     }
     private void handleRefreshItems(){
