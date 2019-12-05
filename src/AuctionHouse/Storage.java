@@ -8,14 +8,20 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
+/***/
 public class Storage {
+    /**The name of the item list file*/
     private final String BOOK;
+    /**Data structure to store items*/
     protected ArrayList<Item> items = new ArrayList<>();
 
+    /**Constructs object with a string that represents the name of text file*/
     public Storage(String book){
         BOOK = book;
     }
 
+    /**Read in text file conatining the list of items, creates all item objects
+     * and store then in an arraylist*/
     public void initialize() throws IOException {
         BufferedReader maze = null;
         String line;
@@ -48,13 +54,15 @@ public class Storage {
         return temp;
     }
 
-
+    /**Method called when item is not sold and placed back to storage
+     * the item base price will drop by 25%*/
     protected void putBack(Item i){
         i.reduceBASPRICE();
         items.add(i);
-
     }
 
+    /**Check if the storage is empty
+     * @return true if empty, else return false*/
     public boolean isEmpty(){
         if(items.isEmpty()){
             return true;
