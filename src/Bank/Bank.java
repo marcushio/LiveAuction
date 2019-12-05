@@ -20,7 +20,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Bank implements BankRemoteService { //extends UnicastRemoteObject
     //private static final long serialVersionUID = 1L; /** this needs to be changed to a specific long **/
     private static int currentId = 0;
-    private final static int portNumber = 12345;
     //private ExecutorService threadRunner = Executors.newCachedThreadPool(); //service to run connected clients
     private ConcurrentHashMap<String, BankAccount> clientAccounts = new ConcurrentHashMap<String, BankAccount>();
     private List<String> agentNameList = new ArrayList<>();
@@ -112,7 +111,7 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
     @Override
     public String registerAgent(String name, double initialBalance) throws RemoteException {
         System.out.println("Hey we're registering an agent!");
-        String newId = getNewId();
+        String newId = getNewBankAccountId();
         BankAccount newAccount = new BankAccount(newId, name, initialBalance);
         clientAccounts.put(newAccount.getAccountNumber(), newAccount);
         String accountNumber = newAccount.getAccountNumber();
@@ -140,9 +139,11 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
      */
     @Override
     public String registerAuctionHouse(String address, String name) throws RemoteException {
-        BankAccount newAccount = new BankAccount(getNewId(), name, 0);
+        System.out.println("Registering Auction House: " + name);
+        BankAccount newAccount = new BankAccount(getNewBankAccountId(), name, 0);
         clientAccounts.put(newAccount.getAccountNumber(), newAccount);
         auctionHouseAddresses.add(address);
+        System.out.println("Auction House registered!");
         return newAccount.getAccountNumber();
     }
 
@@ -189,7 +190,7 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
         return auctionHouseAddresses;
     }
 
-    private synchronized String getNewId() {
+    private synchronized String getNewBankAccountId() {
         return Integer.toString(++currentId);
     }
 
