@@ -9,6 +9,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,13 +20,12 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Bank implements BankRemoteService { //extends UnicastRemoteObject
     //private static final long serialVersionUID = 1L; /** this needs to be changed to a specific long **/
     private static int currentId = 0;
-    private final static int portNumber = 12345;
     //private ExecutorService threadRunner = Executors.newCachedThreadPool(); //service to run connected clients
     private ConcurrentHashMap<String, BankAccount> clientAccounts = new ConcurrentHashMap<String, BankAccount>();
     private List<String> agentNameList = new ArrayList<>();
     private List<String> auctionHouseAddresses = new ArrayList<>();
 
-    public Bank() throws RemoteException { }
+    //public Bank() throws RemoteException { }
 
 
     /**
@@ -66,7 +66,10 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
      */
     @Override
     public String getBalanceString(String accountID) throws RemoteException{
-        return String.valueOf(clientAccounts.get(accountID).getTotalBalance());
+        double balance = clientAccounts.get(accountID).getTotalBalance();
+        DecimalFormat formatter = new DecimalFormat("#.00");
+        String formattedBalance = formatter.format(balance);
+        return formattedBalance;
     }
 
     /**
@@ -76,7 +79,10 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
      * @return String reflecting the difference between the account balance and total of all blocked funds for the account
      */
     public String getAvailableFundsString(String accountID) throws RemoteException{
-        return String.valueOf(clientAccounts.get(accountID).getAvailableBalance());
+        double availableBalance = clientAccounts.get(accountID).getAvailableBalance();
+        DecimalFormat formatter = new DecimalFormat("#.00");
+        String formattedBalance = formatter.format(availableBalance);
+        return formattedBalance;
     }
     /**
      * checks if this clients account has sufficient funds for a bid.
@@ -105,8 +111,8 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
     @Override
     public String registerAgent(String name, double initialBalance) throws RemoteException {
         System.out.println("Hey we're registering an agent!");
-        agentNameList.add(name);
-        BankAccount newAccount = new BankAccount(getNewId(), initialBalance);
+        String newId = getNewBankAccountId();
+        BankAccount newAccount = new BankAccount(newId, name, initialBalance);
         clientAccounts.put(newAccount.getAccountNumber(), newAccount);
         String accountNumber = newAccount.getAccountNumber();
         if(accountNumber == null) System.out.println("account number was returned null");
@@ -120,9 +126,7 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
      * @return an integer account number that the user will use to access their account
      */
     public String makeAccount(String name, Double initialBalance) throws RemoteException {
-        BankAccount newAccount = new BankAccount(getNewId(), initialBalance);
-        clientAccounts.put(newAccount.getAccountNumber(), newAccount);
-        return newAccount.getAccountNumber();
+        return registerAgent(name, initialBalance);
     }
 
 
@@ -134,10 +138,12 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
      * @throws RemoteException
      */
     @Override
-    public String registerAuctionHouse(String name) throws RemoteException {
-        BankAccount newAccount = new BankAccount(getNewId(), 0);
+    public String registerAuctionHouse(String address, String name) throws RemoteException {
+        System.out.println("Registering Auction House: " + name);
+        BankAccount newAccount = new BankAccount(getNewBankAccountId(), name, 0);
         clientAccounts.put(newAccount.getAccountNumber(), newAccount);
-        auctionHouseAddresses.add(name);
+        auctionHouseAddresses.add(address);
+        System.out.println("Auction House registered!");
         return newAccount.getAccountNumber();
     }
 
@@ -155,25 +161,23 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
     /**
      * removes account associated with this client from the bank.
      *
-     * @param accountNumber
+     * @param accountId
      * @return true if we were able to deregister else false
      * @throws RemoteException
      */
     @Override
-    public boolean deregister(int accountNumber) throws RemoteException {
-        /*
-        if (clients.get(accountNumber) == null) {
+    public boolean deregister(String accountId) throws RemoteException {
+        //remove bank account
+        //remove auctionhouse from list
+        //remove
+        if (clientAccounts.get(accountId) == null) {
+            System.out.println("There was no account with that number");
             return false;
         }
-        Client auctionHouse = clients.get(accountNumber);
-        if (auctionHouse instanceof AuctionHouse) {
-            auctionList.remove(auctionHouse);
-        }
-        clientAccounts.remove(accountNumber);
-        clients.remove(accountNumber);
-        return true;
+        BankAccount toBeDeleted = clientAccounts.get(accountId);
+        //String name = toBeDeleted.get
+        clientAccounts.remove(accountId);
 
-         */
         return true;
     }
 
@@ -186,7 +190,7 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
         return auctionHouseAddresses;
     }
 
-    private synchronized String getNewId() {
+    private synchronized String getNewBankAccountId() {
         return Integer.toString(++currentId);
     }
 
@@ -208,11 +212,6 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
         } catch (RemoteException ex) {
             System.err.println("Remote exception while making a new bank.");
         }
-        /*
-        catch (MalformedURLException ex) {
-            System.err.println("didn't form a correct URL for the server");
-        }
-         */
     }
 
 

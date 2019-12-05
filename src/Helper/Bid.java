@@ -15,7 +15,7 @@ public class Bid implements Serializable {
     private double dollarAmount= 0.00;
     private String houseAddress = "";
     private BidStatusMessage status = BidStatusMessage.REJECTED;
-    private StringProperty displayString = new SimpleStringProperty("");
+
     @Override
     public boolean equals(Object o){
         if (!(o instanceof Bid)) return false;

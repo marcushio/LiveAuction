@@ -14,11 +14,15 @@ import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * Agent is the model used by Gui. It interacts with the servers. The Gui instance updates Agent's appropriate
@@ -44,27 +48,56 @@ public class Agent implements AgentRemoteService {
     private StringProperty selectedItemProperty = new SimpleStringProperty("NONE");
     private BankRemoteService bankService;
 
-    public Agent(String name, String liquidFunds) {
+    /**
+     * Make new agent instance with given name and a starting amount of funds and register it with the bank.
+     * @param name String specifying the agent's name. Can include first or full name.
+     * @param liquidFunds String specifying a dollar amount. Should be a float type with two decimal places
+     * @parma bankAddress address of bank
+     */
+    public Agent(String name, String liquidFunds, String bankAddress) {
         this.name.set(name);
         this.liquidFunds = Double.parseDouble(liquidFunds);
-//       try {
-//            bankService = (BankRemoteService) Naming.lookup("bankServer");
-//        }
-//        catch(IOException e){
-//            userMessages.set("IO Exception Could not connect to bank");
-//        }
-//        catch(NotBoundException e){
-//            userMessages.set("Not bound exception");
-//     }
-//       // accountNumber = bankService.registerAgent(name, liquidFunds);
-//        try{
-//           accountID = bankService.registerAgent(name,Double.valueOf(liquidFunds));
-//        }
-//        catch(RemoteException e){
-//
-//        }
+       try {
+            bankService = (BankRemoteService) Naming.lookup(bankAddress);
+        }
+        catch(IOException e){
+            userMessages.set("IO Exception Could not connect to bank");
+        }
+        catch(NotBoundException e){
+            userMessages.set("Not bound exception");
+     }
+
+        try{
+           accountID = bankService.registerAgent(name,Double.valueOf(liquidFunds));
+        }
+        catch(RemoteException e){
+
+        }
+        //////////////////////IP STUFF
+
+        InetAddress ip;
+        String hostname;
+        try {
+            ip = InetAddress.getLocalHost();
+            hostname = ip.getHostName();
+            System.out.println("Your current IP address : " + ip);
+            System.out.println("Your current Hostname : " + hostname);
+
+        } catch (UnknownHostException e) {
+
+            e.printStackTrace();
+        }
+
+        ///////////////////////////////
     }
 
+    public void registerWithRMI() throws RemoteException{
+            AgentRemoteService thisService = this;
+            AgentRemoteService stub = (AgentRemoteService) UnicastRemoteObject.exportObject( (AgentRemoteService) thisService, 0);
+            Registry registry = LocateRegistry.createRegistry(1099);
+            registry.rebind("agentServer", stub);
+            System.out.println("Server created... server running...");
+    }
     public ObservableList<String> getItemStringList(){
         return itemList;
     }
@@ -121,6 +154,7 @@ public class Agent implements AgentRemoteService {
     public void connect(String selectedHouseAddress) {
         try {
             selectedHouse = (AuctionHouseRemoteService) Naming.lookup(selectedHouseAddress);
+            refreshItemList();
         }
         catch(NotBoundException e){
             userMessages.set("NOT BOUND ISSUE WITH HOUSE");
@@ -171,7 +205,6 @@ public class Agent implements AgentRemoteService {
     public void refreshBidList() {
         bidList.clear();
         for(Bid bid: bidsMade){
-            connect(bid.getHouseAddress());
             bidList.add(bid.toString());
         }
     }

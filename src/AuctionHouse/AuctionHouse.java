@@ -4,6 +4,10 @@ import Agent.Agent;
 import Helper.*;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -26,12 +30,18 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
     private static String book = "C:/Items.txt";
     public Auction[] stages;
     private static int portNumber;
-    private String acountNumber;
+    private String accountNumber;
     private static boolean over = false;
     private boolean balance;
     /**Queue of bid objects to process*/
     private BlockingQueue<Bid> internal = new LinkedBlockingDeque<>();
     private static Scanner scanner = new Scanner(System.in);
+
+    private BankRemoteService bankService;
+    private String bankName;
+    private String bankIP;
+    private int bankPort;  //pretty sure we're just going to keep this the standard 1099 -marcus
+
 
     /**Constructs auction house with a unique ID*/
     public AuctionHouse(Storage storage){
@@ -156,13 +166,41 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
 
     /**Register an account at bank with ID(Used as account ID?)*/
     private void registerAtBank(){
+        //code below is to connect to the bank over RMI
+        try {
+            Registry rmiRegistry = LocateRegistry.getRegistry(bankIP);
+            //bankService = (BankRemoteService) rmiRegistry.lookup(bankName);  //this is for remote machines
+            bankService = (BankRemoteService) Naming.lookup("bankServer"); // -this was used when on same pc;
+            accountNumber = bankService.registerAuctionHouse(InetAddress.getLocalHost().toString(), ID);
+            //InetAddress.getLocalHost(); returns an InetAddress
+            //InetAddress.getLocalHost().getHostAddress returns string...
+        } catch(IOException e){
+            e.printStackTrace();
+        } catch(NotBoundException ex){
+            ex.printStackTrace();
+        }
+        //
 
+        /// getting auction's ip stuffs ////
+//        InetAddress ip;
+//        String hostname;
+//        try{
+//            ip = InetAddress.getLocalHost();
+//            hostname = ip.getHostName();
+//        } catch (UnknownHostException ex ){
+//
+//        }
+        ///////
     }
 
     /**Deregister at bank*/
     private void deRegisterAtBank(){
         /**Deregister at bank and receive money in account*/
-
+        try {
+            bankService.deregister(accountNumber);
+        } catch(RemoteException ex){
+            ex.printStackTrace();
+        }
     }
 
     @Override

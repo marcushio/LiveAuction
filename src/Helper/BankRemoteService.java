@@ -28,10 +28,11 @@ public interface BankRemoteService extends java.rmi.Remote{
 
     /**
      * Register a bank account for auction house
+     * @param address the port and address of this auction house.
      * @param name Actually ID is the only identification for AH
      * @return return the account number back to auction house
      * */
-    public String registerAuctionHouse(String name) throws RemoteException; //this is for AuctionHouse, intial balance is always 0
+    public String registerAuctionHouse(String address, String name) throws RemoteException; //this is for AuctionHouse, intial balance is always 0
 
     /**
      * Unblock the found on item due to lost bid/out bid
@@ -49,10 +50,10 @@ public interface BankRemoteService extends java.rmi.Remote{
      * Delete account of given account number, and transfer amount in the account
      * to the corresponding auction house/agent
      * Need to check if auction house/agent have items on bid and reject if they do
-     * @param accountNumber Identity
+     * @param accountId Identity
      * @return true if deregister successful, else return false
      */
-    public boolean deregister(int accountNumber) throws RemoteException;
+    public boolean deregister(String accountId) throws RemoteException;
 
 
     //Signatures For Methods That Agent requires
