@@ -14,33 +14,34 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.rmi.RemoteException;
+import java.text.ParseException;
 import java.util.List;
 
 public class Gui extends Application {
-    Pane root;
-    Scene scene;
-    TextField userEnteredAmount = new TextField("0.00");
-    ListView<String> itemList = new ListView<>();
-    ListView <String> auctionHouseList = new ListView<>();
-    ListView currentBidsList = new ListView<>();
-    Button refreshBalance, submitBid, refreshBids, selectItem, refreshHousesList, selectHouse;
-    Text balance, availableFunds, selectedItem, selectedHouse, name;
-    TextArea messages = new TextArea("");
+    private Pane root;
+    private Scene scene;
+    private TextField userEnteredAmount = new TextField("0.00");
+    private ListView<String> itemList = new ListView<>();
+    private ListView <String> auctionHouseList = new ListView<>();
+    private ListView currentBidsList = new ListView<>();
+    private Button refreshBalance, submitBid, refreshBids, selectItem, refreshHousesList, selectHouse;
+    private Text balance, availableFunds, selectedItem, selectedHouse, name;
+    private static TextArea userMessages = new TextArea("");
     Agent agent;
 
     public static void main (String [] args){
-        launch(args);
+            launch(args);
     }
     @Override
-    public void start(Stage primaryStage) throws RemoteException {
-        handleParams();
+    public void start(Stage primaryStage) {
         makeLayout();
         setWindow();
         primaryStage.setScene(scene);
         primaryStage.setMaximized(true);
         primaryStage.setTitle("Auction App");
-        bindVariables(agent);
         primaryStage.show();
+        handleParams();
+        bindVariables(agent);
     }
     private void bindVariables(Agent agent){
         name.textProperty().set(agent.getName().get());
@@ -52,7 +53,7 @@ public class Gui extends Application {
         auctionHouseList.setItems(agent.getHousesAddressList());
         itemList.setItems(agent.getItemStringList());
         currentBidsList.setItems(agent.getBidList());
-        messages.textProperty().bind(agent.getMessagesProperty());
+        userMessages.textProperty().bind(agent.getMessagesProperty());
     }
     private void setWindow(){
         Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
@@ -66,7 +67,7 @@ public class Gui extends Application {
                 makeHousesColumn(),
                 makeItemsColumn(),
                 makeBidAndBalanceColumn(),
-                messages
+                userMessages
 
         );
     }
@@ -166,19 +167,17 @@ public class Gui extends Application {
         agent.refreshBidList();
     }
 
-    private void handleParams(){
+    private void handleParams() {
         List<String> params = getParameters().getRaw();
-        if(params.get(0).matches("[0-9]*.[0-9][0-9]")&&params.size()>0)
-        if(params.get(0).matches("[0-9]*.[0-9][0-9]")&&params.size()>0)
+        if(params.size()>2)
         {
+            String startingFunds = params.get(0);
+            String bankAddress = params.get(params.size()-1);
             String name = "";
-            for(int i = 1; i < params.size(); i++){
+            for(int i = 1; i < params.size()-2; i++){
                 name += params.get(i) + " ";
             }
-            agent = new Agent(name,params.get(0));
-        }
-        else {
-            agent = new Agent("Unknown", "0.00");
+            agent = new Agent(name,startingFunds,bankAddress);
         }
     }
     private void handleRefreshItems(){
