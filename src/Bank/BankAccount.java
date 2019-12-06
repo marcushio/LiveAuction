@@ -98,7 +98,7 @@ public class BankAccount {
     /**
      * Unblock funds that were set aside for a specific item
      */
-    public synchronized boolean unblockFunds(int itemId){
+    public synchronized boolean unblockFunds(String itemId){
         BlockedFund freedFunds = blockedFunds.get(itemId) ;
         availableBalance += freedFunds.getAmount();
         blockedFunds.remove(itemId);
