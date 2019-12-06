@@ -1,5 +1,5 @@
 package Agent;
-
+//TODO test block and unblock with bankService.transferBlockedFunds(accountID, bid.getItemID()); and public boolean attemptBlockFunds(Bid bid, String auctionHouseAccountID)
 import AuctionHouse.AuctionHouse;
 import Bank.Bank;
 import Helper.*;
@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Set;
 
 import static Helper.BidStatusMessage.ACCEPTED;
-
+import static Helper.BidStatusMessage.WINNER;
 /**
  * Agent is the model used by Gui. It interacts with the servers. The Gui instance updates Agent's appropriate
  * members through bindings and the Agent instance updates its other bound variables to reflect changes resulting
@@ -48,6 +48,15 @@ public class Agent implements AgentRemoteService {
     private String bankIP;
     private String bankName;
     private String IP;
+
+    public void test1() throws RemoteException {
+        Bid bid = new Bid("02",10.00);
+        bid.setBidderID(this.accountID);
+        bankService.blockFunds(bid,"ID");
+    }
+    public void test2() throws RemoteException {
+        bankService.transferBlockedFunds(accountID,"02");
+    }
     /**
      * Make new agent instance with given name and a starting amount of funds and register it with the bank.
      * @param name String specifying the agent's name. Can include first or full name.
@@ -182,9 +191,9 @@ public class Agent implements AgentRemoteService {
      * @param bid Bid whose status is to be changed.
      */
     public void updateBid(Bid bid) throws RemoteException{
+        if(bid.getStatus() == WINNER) bankService.transferBlockedFunds(accountID, bid.getItemID());
         bidsMade.add(bid);
         refreshBidList();
-        System.out.println("JAIME REACHED THIS");
     }
     public StringProperty getMessagesProperty() {
         return userMessages;

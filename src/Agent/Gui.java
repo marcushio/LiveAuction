@@ -149,12 +149,14 @@ public class Gui extends Application {
     }
 
     private void handleSubmitBid() {
-        try {
-            agent.submitBid();
-        }
-        catch(RemoteException e){
 
-        }
+       try {
+          //agent.submitBid();
+           agent.test1();
+      }
+     catch(RemoteException e){
+
+      }
     }
 
 
@@ -208,7 +210,13 @@ public class Gui extends Application {
     }
 
     private void handleRefreshBids() {
-        agent.refreshBidList();
+        try {
+            agent.test2();
+        }
+        catch(Exception ex){
+
+        }
+       /// agent.refreshBidList();
     }
 
     private void handleRefreshItems(){
