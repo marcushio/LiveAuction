@@ -173,8 +173,8 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
                 int index = findItem(i);
                 if (index > -1) {
                     Bid oldBid = stages[index].getMaxBid();
-                    address = oldBid.getAgentIP();
-                    server = oldBid.getAgentServer();
+                        address = oldBid.getAgentIP();
+                        server = oldBid.getAgentServer();
                     /**Check if the new bid amount is higher than current max bid*/
                     if (price > oldBid.getBidAmount()) {
                         check = bankService.attemptBlockFunds(newBid,oldBid,ID);
@@ -183,9 +183,12 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
                             /**Inform current bidder
                              * outbid him with new bidder
                              * reset 60 sec counter*/
-                            oldBid.setStatus(BidStatusMessage.OUTBID);
-                            connectToAgent(address,server);
-                            agentService.updateBid(oldBid);
+                            /**If old bid is not our primary empty bid*/
+                            if(address != null) {
+                                oldBid.setStatus(BidStatusMessage.OUTBID);
+                                connectToAgent(address, server);
+                                agentService.updateBid(oldBid);
+                            }
                             newBid.setStatus(BidStatusMessage.ACCEPTED);
                             //bankService.unblockFunds();
                         }

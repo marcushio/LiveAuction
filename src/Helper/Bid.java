@@ -104,6 +104,12 @@ public class Bid implements Serializable {
         return status;
     }
 
+    public boolean isEmpty(){
+        if(bidderID == null){
+            return true;
+        }
+        return false;
+    }
 
     public String getAgentIP() {
         return agentIP;
