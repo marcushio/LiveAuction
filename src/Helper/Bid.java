@@ -64,9 +64,7 @@ public class Bid implements Serializable {
     public String getItemID(){
         return itemID;
     }
-    public Item getItem(){
-        return new Item("FAKE", 10);
-    }
+
 
     public double getBidAmount(){
         return dollarAmount;
@@ -104,6 +102,12 @@ public class Bid implements Serializable {
         return status;
     }
 
+    public boolean isEmpty(){
+        if(bidderID == null){
+            return true;
+        }
+        return false;
+    }
 
     public String getAgentIP() {
         return agentIP;
@@ -120,4 +124,5 @@ public class Bid implements Serializable {
     public void setAgentServer(String agentServer) {
         this.agentServer = agentServer;
     }
+
 }

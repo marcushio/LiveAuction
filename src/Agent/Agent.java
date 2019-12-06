@@ -1,5 +1,5 @@
 package Agent;
-
+//TODO test block and unblock with bankService.transferBlockedFunds(accountID, bid.getItemID()); and public boolean attemptBlockFunds(Bid bid, String auctionHouseAccountID)
 import AuctionHouse.AuctionHouse;
 import Bank.Bank;
 import Helper.*;
@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Set;
 
 import static Helper.BidStatusMessage.ACCEPTED;
-
+import static Helper.BidStatusMessage.WINNER;
 /**
  * Agent is the model used by Gui. It interacts with the servers. The Gui instance updates Agent's appropriate
  * members through bindings and the Agent instance updates its other bound variables to reflect changes resulting
@@ -28,6 +28,7 @@ import static Helper.BidStatusMessage.ACCEPTED;
  */
 public class Agent implements AgentRemoteService {
     private Set<Bid> bidsMade = new HashSet<>();
+    private List<Item> currentItems = new ArrayList<>();
     private StringProperty userMessages = new SimpleStringProperty("");
     private StringProperty currentBidAmount = new SimpleStringProperty("0.00");
     private ObservableList<String> itemList = FXCollections.observableArrayList();
@@ -48,6 +49,7 @@ public class Agent implements AgentRemoteService {
     private String bankIP;
     private String bankName;
     private String IP;
+
     /**
      * Make new agent instance with given name and a starting amount of funds and register it with the bank.
      * @param name String specifying the agent's name. Can include first or full name.
@@ -83,11 +85,11 @@ public class Agent implements AgentRemoteService {
     }
     //TODO give agents unique names
     public void registerWithRMI() throws RemoteException{
-            AgentRemoteService thisService = this;
-            AgentRemoteService stub = (AgentRemoteService) UnicastRemoteObject.exportObject( (AgentRemoteService) thisService, 0);
-            //TODO account for multiple agents either make them use same rmi or generate diff ports
-            Registry registry = LocateRegistry.createRegistry(1099);// be ready to change back to 1099, 12345 is just for same comp as bank
-            registry.rebind("agentServer", stub);
+        AgentRemoteService thisService = this;
+        AgentRemoteService stub = (AgentRemoteService) UnicastRemoteObject.exportObject( (AgentRemoteService) thisService, 0);
+        //TODO account for multiple agents either make them use same rmi or generate diff ports
+        Registry registry = LocateRegistry.createRegistry(1099);// be ready to change back to 1099, 12345 is just for same comp as bank
+        registry.rebind("agentServer", stub);
     }
     public ObservableList<String> getItemStringList(){
         return itemList;
@@ -107,9 +109,9 @@ public class Agent implements AgentRemoteService {
         }
     }
     public void refreshItemList() throws RemoteException{
-         List<Item> items = selectedHouse.getListedItems();
+        currentItems = selectedHouse.getListedItems();
         List<String> itemStrings = new ArrayList<>();
-        for(Item item : items){
+        for(Item item : currentItems){
             itemStrings.add(item.toString());
         }
         itemList.clear();
@@ -134,8 +136,10 @@ public class Agent implements AgentRemoteService {
 
     public void refreshBalances() {
         try {
-            currentBalanceProperty.set(bankService.getBalanceString(accountID));
-            availableFundsProperty.set(bankService.getAvailableFundsString(accountID));
+            String balanceString = bankService.getBalanceString(accountID);
+            String availableFundsString = bankService.getAvailableFundsString(accountID);
+            currentBalanceProperty.set(balanceString);
+            availableFundsProperty.set(availableFundsString);
         } catch(RemoteException ex){
             System.err.println("couldn't refresh balance");
         }
@@ -182,9 +186,10 @@ public class Agent implements AgentRemoteService {
      * @param bid Bid whose status is to be changed.
      */
     public void updateBid(Bid bid) throws RemoteException{
+        if(bid.getStatus() == WINNER) bankService.transferBlockedFunds(accountID, bid.getItemID());
+        bidsMade.remove(bid);
         bidsMade.add(bid);
         refreshBidList();
-        System.out.println("JAIME REACHED THIS");
     }
     public StringProperty getMessagesProperty() {
         return userMessages;

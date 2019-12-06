@@ -123,12 +123,8 @@ public class Gui extends Application {
         VBox column = new VBox();
         refreshBalance = new Button("Refresh");
         submitBid = new Button("Bid!");
-        refreshBids = new Button("Refresh");
         submitBid.setOnAction(event -> handleSubmitBid());
-        refreshBids.setOnAction(e->handleRefreshBids());
         refreshBalance.setOnAction(e->handleRefreshBalances());
-        balance = new Text("0.00");
-        availableFunds = new Text("0.00");
         selectedItem = new Text("");
         name = new Text("");
         column.getChildren().addAll(
@@ -142,33 +138,38 @@ public class Gui extends Application {
                 submitBid,
                 new Separator(Orientation.HORIZONTAL),
                 new Text("Current Bids"),
-                currentBidsList,
-                refreshBids
+                currentBidsList
         );
         return column;
     }
 
     private void handleSubmitBid() {
-        try {
-            agent.submitBid();
-        }
-        catch(RemoteException e){
 
-        }
+       try {
+          agent.submitBid();
+
+      }
+     catch(RemoteException e){
+
+      }
     }
 
 
     private VBox makeItemsColumn(){
         VBox column = new VBox();
-        selectItem = new Button("Select");
+        HBox buttons = new HBox();
+        Button selectItem = new Button("Select");
         selectItem.setOnAction(e->handleSelectItem());
+        Button refreshItems = new Button("Refresh");
+        refreshItems.setOnAction(e->{handleRefreshItems();});
         ScrollPane scrollItems = new ScrollPane(itemList);
+        buttons.getChildren().addAll(selectItem, refreshItems);
         column.getChildren().addAll(
                 getLabeledNodeBox("Selected House: ", selectedHouse),
                 new Separator(Orientation.HORIZONTAL),
                 new Text("Items"),
                 scrollItems,
-                selectItem
+                buttons
         );
         return column;
     }
@@ -208,7 +209,8 @@ public class Gui extends Application {
     }
 
     private void handleRefreshBids() {
-        agent.refreshBidList();
+
+
     }
 
     private void handleRefreshItems(){

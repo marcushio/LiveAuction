@@ -61,6 +61,12 @@ public class Auction implements Runnable{
         waitCount = 0;
     }
 
+    public void updateBid(Bid bid){
+        maxBid = bid;
+        maxBidAmount = bid.getBidAmount();
+        item.updateMax(maxBidAmount);
+    }
+
     public String toString(){
         String s = "Item on Stage: "+item.getNAME()+" $"+maxBidAmount;
         return s;
@@ -79,11 +85,11 @@ public class Auction implements Runnable{
     }
 
     /**Runs this thread*/
-    public void run(){
+    public synchronized void run(){
         System.out.println("    "+item.getNAME()+" $"+maxBidAmount);
         while(!Thread.interrupted()){
             try{
-                if(waitCount == 120){
+                if(waitCount == 10){
                     /**If some one bid on the item*/
                     if(false){
                         auctionStatus = 1;
