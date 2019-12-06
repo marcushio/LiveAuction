@@ -80,6 +80,10 @@ public class Bid implements Serializable {
     public void setBidderID(String bidderID){
         this.bidderID = bidderID;
     }
+
+    public String getBidderID(){
+        return bidderID;
+    }
     /**
      * Set the status of this bid. AuctionHouse should update this and send it back.
      * @param status New and updated status of this bid.
