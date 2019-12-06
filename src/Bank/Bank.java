@@ -135,15 +135,26 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
      */
     @Override
     public synchronized boolean attemptBlockFunds(Bid newbid, Bid oldbid, String auctionHouseAccountID) throws RemoteException{
-        BankAccount oldbidAccount = clientAccounts.get(oldbid.getBidderID());
+        boolean successful = false;
         BankAccount newbidAccount = clientAccounts.get(newbid.getBidderID());
-        String itemID = oldbid.getItemID();
-        blockFunds(newbid, auctionHouseAccountID);
-        oldbidAccount.unblockFunds(itemID);
-        return true;
+        String itemID = newbid.getItemID();
+        successful = blockFunds(newbid, auctionHouseAccountID);
+
+//        if(!oldbid.isEmpty()) {
+//            BankAccount oldbidAccount = clientAccounts.get(oldbid.getBidderID());
+//            oldbidAccount.unblockFunds(itemID);
+//        }
+        return successful;
     }
 
-    private boolean blockFunds(Bid bid, String auctionHouseAccountID){
+    /**
+     *
+     * @param bid
+     * @param auctionHouseAccountID
+     * @return
+     */
+    @Override
+    public boolean blockFunds(Bid bid, String auctionHouseAccountID){
         String itemID = bid.getItemID();
         double amount = bid.getBidAmount();
         String accountID = bid.getBidderID();
