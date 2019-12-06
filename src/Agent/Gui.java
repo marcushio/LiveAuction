@@ -37,12 +37,13 @@ public class Gui extends Application {
             {
                 String startingFunds = args[0];
                 String bankAddress = args[args.length - 1];
+                String myAddress = args[args.length-2];
                 String name = "";
-                for (int i = 1; i < args.length - 1; i++) {
+                for (int i = 1; i < args.length - 2; i++) {
                     name += args[i] + " ";
                 }
                 try {
-                    agent = new Agent(name, startingFunds, bankAddress);
+                    agent = new Agent(name, startingFunds, myAddress, bankAddress);
                 } catch (Exception e) {
                     status [0] = "Failed to connect to bank.";
                 }
@@ -196,7 +197,7 @@ public class Gui extends Application {
     }
 
     private void handleSelectHouse() {
-        agent.connect(auctionHouseList.getSelectionModel().getSelectedItem());
+        agent.connectToHouse(auctionHouseList.getSelectionModel().getSelectedItem());
         handleRefreshItems();
     }
 

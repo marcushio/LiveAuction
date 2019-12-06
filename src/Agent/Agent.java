@@ -51,15 +51,16 @@ public class Agent implements AgentRemoteService {
     private BankRemoteService bankService;
     private String bankIP;
     private String bankName;
-
+    private String IP;
     /**
      * Make new agent instance with given name and a starting amount of funds and register it with the bank.
      * @param name String specifying the agent's name. Can include first or full name.
      * @param liquidFunds String specifying a dollar amount. Should be a float type with two decimal places
      * @parma bankAddress address of bank
      */
-    public Agent(String name, String liquidFunds, String bankAddress) {
+    public Agent(String name, String liquidFunds, String myAddress, String bankAddress) {
         this.name.set(name);
+
         this.liquidFunds = Double.parseDouble(liquidFunds);
         try {
             connectToBank(bankAddress);
@@ -105,14 +106,16 @@ public class Agent implements AgentRemoteService {
         }
     }
     public void refreshItemList() throws RemoteException{
+        String blah = selectedHouse.getItem();
         /**Throw remote exception here*/
-        List<Item> items = selectedHouse.getListedItems();
-        List<String> itemStrings = new ArrayList<>();
-        for(Item item : items){
-            itemStrings.add(item.toString());
-        }
-        itemList.clear();
-        itemList.addAll(itemStrings);
+
+        //List<Item> items = selectedHouse.getListedItems();
+       // List<String> itemStrings = new ArrayList<>();
+//        for(Item item : items){
+//            itemStrings.add(item.toString());
+//        }
+       // itemList.clear();
+       // itemList.addAll(itemStrings);
     }
 
     public StringProperty getCurrentBalanceProperty() {
@@ -140,20 +143,21 @@ public class Agent implements AgentRemoteService {
         }
     }
 
-    public void connect(String selectedHouseAddress) {
+    public void connectToHouse(String selectedHouseAddress) {
         try {
-            selectedHouse = (AuctionHouseRemoteService) Naming.lookup(selectedHouseAddress);
+            String addressComponents [] = selectedHouseAddress.split("/");
+            Registry rmiRegistry = LocateRegistry.getRegistry(addressComponents[0]);
+            selectedHouse = (AuctionHouseRemoteService) rmiRegistry.lookup(addressComponents[1]);
             refreshItemList();
         }
         catch(NotBoundException e){
-            userMessages.set("NOT BOUND ISSUE WITH HOUSE");
+            String oldMessage = userMessages.get();
+            userMessages.set(oldMessage+"\n"+"NOT BOUND" +"-----------------"+"\n");
         }
         catch(RemoteException e){
             userMessages.set("REMOTE HOUSE COULDN'T BE REACHED");
         }
-        catch(MalformedURLException e){
-            userMessages.set("BAD URL");
-        }
+
     }
 
     public ObservableList<String> getHousesAddressList() {
