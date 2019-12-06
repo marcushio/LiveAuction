@@ -87,6 +87,9 @@ public class BankAccount {
      * @return true if we blocked the funds else false
      */
     public synchronized boolean blockFunds(double amount, String itemId, String auctionHouseAccountId){ //maybe think of returning the new available bal instead
+        if(availableBalance - amount < 0){
+            return false;
+        }
         availableBalance -= amount;
         blockedFunds.put( itemId, new BlockedFund(amount, itemId, accountId, auctionHouseAccountId ) ) ;
         return true; //fix this currently we always return true

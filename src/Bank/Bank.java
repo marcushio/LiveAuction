@@ -1,6 +1,7 @@
 package Bank;
 
 import Helper.BankRemoteService;
+import Helper.Bid;
 import Helper.BlockedFund;
 
 import java.net.InetAddress;
@@ -115,8 +116,22 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
         BankAccount newAccount = new BankAccount(newId, name, initialBalance);
         clientAccounts.put(newAccount.getAccountNumber(), newAccount);
         String accountNumber = newAccount.getAccountNumber();
+
+        //test blocking funds
+
+        //
         if(accountNumber == null) System.out.println("account number was returned null");
         return accountNumber;
+    }
+
+    @Override
+    public synchronized boolean attemptBlockFunds(Bid bid, String auctionHouseAccountID) throws RemoteException{
+        String itemID = bid.getItemID();
+        double amount = bid.getBidAmount();
+        String accountID = bid.getBidderID();
+        BankAccount account = clientAccounts.get(accountID);
+
+        return account.blockFunds(amount, itemID, auctionHouseAccountID );
     }
 
     /**
