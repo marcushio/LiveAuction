@@ -59,45 +59,40 @@ public class Agent implements AgentRemoteService {
     public Agent(String name, String liquidFunds, String bankAddress) {
         this.name.set(name);
         this.liquidFunds = Double.parseDouble(liquidFunds);
+        try {
+            connectToBank(bankAddress);
+        }
+        catch(Exception ex) {
+            userMessages.set(ex.getMessage());
+        }
+     }
 
+    private void connectToBank(String bankAddress) throws RemoteException, NotBoundException {
         String[] addressComponents = bankAddress.split("/" , 2);
         bankIP = addressComponents[0];
         bankName = addressComponents[1];
-       try {
-            //bankService = (BankRemoteService) Naming.lookup(bankAddress);
-           Registry rmiRegistry = LocateRegistry.getRegistry(bankIP);
-           bankService = (BankRemoteService) rmiRegistry.lookup(bankName);
-        }
-        catch(IOException e){
-            userMessages.set("IO Exception Could not connect to bank");
-        }
-        catch(NotBoundException e){
-            userMessages.set("Not bound exception");
-     }
-
-        try{
-           accountID = bankService.registerAgent(name,Double.valueOf(liquidFunds));
-        }
-        catch(RemoteException e){
-
-        }
+        Registry rmiRegistry = LocateRegistry.getRegistry(bankIP);
+        bankService = (BankRemoteService) rmiRegistry.lookup(bankName);
+        accountID = bankService.registerAgent(name.get(),Double.valueOf(liquidFunds));
+    }
         //////////////////////IP STUFF
-
-        InetAddress ip;
-        String hostname;
-        try {
-            ip = InetAddress.getLocalHost();
-            hostname = ip.getHostName();
-            System.out.println("Your current IP address : " + ip);
-            System.out.println("Your current Hostname : " + hostname);
-
-        } catch (UnknownHostException e) {
-
-            e.printStackTrace();
-        }
+//
+//        InetAddress ip;
+//        String hostname;
+//        try {
+//            ip = InetAddress.getLocalHost();
+//            hostname = ip.getHostName();
+//            System.out.println("Your current IP address : " + ip);
+//            System.out.println("Your current Hostname : " + hostname);
+//
+//        } catch (UnknownHostException e) {
+//
+//            e.printStackTrace();
+//        }
 
         ///////////////////////////////
-    }
+
+
 
     public void registerWithRMI() throws RemoteException{
             AgentRemoteService thisService = this;

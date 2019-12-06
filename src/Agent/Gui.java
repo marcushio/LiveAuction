@@ -1,6 +1,7 @@
 package Agent;
 
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
@@ -12,6 +13,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import java.rmi.RemoteException;
 import java.text.ParseException;
@@ -28,7 +30,7 @@ public class Gui extends Application {
     private Text balance, availableFunds, selectedItem, selectedHouse, name;
     private TextArea userMessages = new TextArea("");
     private static Agent agent;
-
+    private boolean isClosable = false;
     public static void main (String [] args){
         String status [] = new String[1];
         if(args.length>2) {
@@ -41,32 +43,40 @@ public class Gui extends Application {
                 }
                 try {
                     agent = new Agent(name, startingFunds, bankAddress);
-                    agent.registerWithRMI();
                 } catch (Exception e) {
-                    launch(status);
+                    status [0] = "Failed to connect to bank.";
+                }
+                try{
+                    agent.registerWithRMI();
+                }
+                catch(RemoteException e){
+                    status[0] = "RMI Registration Failure";
                 }
             }
-            status [0] = "ok";
+
         }
         launch(status);
 
     }
-    public void setAgent(Agent agent){
-        this.agent = agent;
-    }
+
+
     @Override
     public void start(Stage primaryStage) {
+        primaryStage.setOnCloseRequest((WindowEvent windowEvent) -> {
+            windowEvent.consume();
+            if(this.isClosable()) System.exit(0);
+        });
         int numArgs = getParameters().getRaw().size();
         makeLayout();
         setWindow();
         primaryStage.setScene(scene);
         primaryStage.setMaximized(true);
         primaryStage.setTitle("Auction App");
-        if (numArgs > 0){
+        if (numArgs == 0){
             bindVariables(agent);
         }
         else{
-            userMessages.appendText("Issue with setup. Please exit and try again.");
+            userMessages.appendText(getParameters().getRaw().get(0));
         }
         primaryStage.show();
     }
@@ -160,6 +170,9 @@ public class Gui extends Application {
         return column;
     }
 
+    private boolean isClosable(){
+        return true;
+    }
     private VBox makeHousesColumn(){
         VBox column = new VBox();
         HBox buttons = new HBox();
