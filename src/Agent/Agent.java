@@ -112,7 +112,6 @@ public class Agent implements AgentRemoteService {
         }
     }
     public void refreshItemList() throws RemoteException{
-        String blah = selectedHouse.getItem();
         /**Throw remote exception here*/
 
         //List<Item> items = selectedHouse.getListedItems();
@@ -154,7 +153,6 @@ public class Agent implements AgentRemoteService {
             String addressComponents [] = selectedHouseAddress.split("/");
             Registry rmiRegistry = LocateRegistry.getRegistry(addressComponents[0]);
             selectedHouse = (AuctionHouseRemoteService) rmiRegistry.lookup(addressComponents[1]);
-            String test = selectedHouse.getItem();
             //refreshItemList();
             System.out.println("DONE");
         }

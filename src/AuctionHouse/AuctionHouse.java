@@ -61,8 +61,8 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
         return items;
     }
 
-    public String getItem(){
-        return "Please work";
+    public Item getItem(){
+        return stages[0].getItem();
     }
 
     /**Return the ID of this auction house*/
@@ -162,6 +162,8 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
     /**Try process bid*/
     private void processBid() throws InterruptedException{
         Bid bid = external.take();
+        String address = bid.getAgentAddress();
+        boolean check;
         if(bid != null) {
             Item i = bid.getItem();
             double price = bid.getPriceVal();
@@ -170,6 +172,7 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
                 Bid currentBid = stages[index].getMaxBid();
                 /**Check if the new bid amount is higher than current max bid*/
                 if (price > currentBid.getBidAmount()) {
+                    //check = bankService.sufficientFunds(address,price);
                     /**Request bank to check affordable*/
                     if (true) {
                         /**Inform current bidder
@@ -195,6 +198,7 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
             bankService = (BankRemoteService) rmiRegistry.lookup(bankName);  //this is for remote machines
             //bankService = (BankRemoteService) Naming.lookup("bankServer"); // -this was used when on same pc;
             accountNumber = bankService.registerAuctionHouse(ip, ID);
+            System.out.println("My account number is"+accountNumber);
             //InetAddress.getLocalHost(); returns an InetAddress
             //InetAddress.getLocalHost().getHostAddress returns string...
         } catch(IOException e){
@@ -220,7 +224,7 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
         try {
             Registry rmiRegistry = LocateRegistry.getRegistry(agentAddress);
             agentService = (AgentRemoteService) rmiRegistry.lookup(agentServer);
-            agentService.updateBid(new Bid("asdasdasd", 12083));
+            //agentService.test();
 
         }catch(Exception e){
             e.printStackTrace();
@@ -242,7 +246,7 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
         /**First Thing register at bank*/
         initialize();
         registerAtBank();
-        connectToAgent("64.106.20.248","agentServer");
+        //connectToAgent("64.1","agentServer");
         while(!Thread.interrupted()){
             try{
                 if(!external.isEmpty()) {
