@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.UUID;
 /**Object representing the items in Auction House*/
 public class Item implements Serializable {
+    private static final long serialVersionUID = -4705472581793918514L;
     /**Name of the item, for display purpose only*/
     private final String NAME;
     /**Unique identity of a item*/

@@ -10,6 +10,7 @@ import java.io.Serializable;
  * Encapsulates information about a bid which consists of an amount and and item.
  */
 public class Bid implements Serializable {
+    private static final long serialVersionUID = -4705472581793918514L;
     private String itemID;
     private String agentAddress;
     private double dollarAmount= 0.00;
