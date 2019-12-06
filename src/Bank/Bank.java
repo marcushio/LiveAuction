@@ -14,6 +14,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -21,11 +22,11 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  */
 public class Bank implements BankRemoteService { //extends UnicastRemoteObject
-    //private static final long serialVersionUID = 1L; /** this needs to be changed to a specific long **/
     private static int currentId = 0;
     private ConcurrentHashMap<String, BankAccount> clientAccounts = new ConcurrentHashMap<String, BankAccount>();//<String accountID, BankAccount>
     private List<String> agentNameList = new ArrayList<>();
     private List<String> auctionHouseAddresses = new ArrayList<>(); //
+    private HashMap<String, String> auctionLookupByAccountID = new HashMap<>();
 
     //public Bank() throws RemoteException { }
 
@@ -59,7 +60,13 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
         return successful;
     }
 
-    public boolean unblockFunds(String accountID, String itemID){
+    /**
+     * Called to unblock the funds for a particular account for a specific item
+     * @param accountID
+     * @param itemID
+     * @return true if the funds were unblocked
+     */
+    public synchronized boolean unblockFunds(String accountID, String itemID){
         BankAccount account = clientAccounts.get(accountID);
         return account.unblockFunds(itemID);
     }
@@ -90,15 +97,15 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
         String formattedBalance = formatter.format(availableBalance);
         return formattedBalance;
     }
+
     /**
      * checks if this clients account has sufficient funds for a bid.
-     *
      * @param accountNumber
      * @return if true if enough funds are available else false
      * @throws RemoteException
      */
     @Override
-    public boolean sufficientFunds(String accountNumber, double amountNeeded) throws RemoteException {
+    public synchronized boolean sufficientFunds(String accountNumber, double amountNeeded) throws RemoteException {
         BankAccount account = clientAccounts.get(accountNumber);
         if (account.getAvailableBalance() >= amountNeeded) {
             return true;
@@ -108,7 +115,6 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
 
     /**
      * Registers an agent with the bank
-     *
      * @param name
      * @param initialBalance
      * @return true if we were able to register else false
@@ -170,7 +176,7 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
      * @param initialBalance Starting balance for the account
      * @return an integer account number that the user will use to access their account
      */
-    public String makeAccount(String name, Double initialBalance) throws RemoteException {
+    public synchronized String makeAccount(String name, Double initialBalance) throws RemoteException {
         return registerAgent(name, initialBalance);
     }
 
@@ -183,12 +189,13 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
      * @throws RemoteException
      */
     @Override
-    public String registerAuctionHouse(String address, String name) throws RemoteException {
+    public synchronized String registerAuctionHouse(String address, String name) throws RemoteException {
         System.out.println("Registering Auction House: " + name);
         BankAccount newAccount = new BankAccount(getNewBankAccountId(), name, 0);
         clientAccounts.put(newAccount.getAccountNumber(), newAccount);
         address = address + "/" + name;
         auctionHouseAddresses.add(address);
+        auctionLookupByAccountID.put(newAccount.getAccountNumber(), address);
         System.out.println("Auction House registered!");
         return newAccount.getAccountNumber();
     }
@@ -201,7 +208,7 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
      * @throws RemoteException
      */
     @Override
-    public boolean deregister(String accountId) throws RemoteException {
+    public synchronized boolean deregister(String accountId) throws RemoteException {
         //remove bank account
         //remove auctionhouse from list
         //remove
@@ -210,8 +217,10 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
             return false;
         }
         BankAccount toBeDeleted = clientAccounts.get(accountId);
-        //String name = toBeDeleted.get
+        String address = auctionLookupByAccountID.get(accountId);
         clientAccounts.remove(accountId);
+        auctionHouseAddresses.remove(address);
+        auctionLookupByAccountID.remove(accountId);
         System.out.println("account: " + accountId + " deregistered");
         return true;
     }
@@ -229,10 +238,6 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
         return Integer.toString(++currentId);
     }
 
-    @Override
-    public void remoteTest(){
-        System.out.println("Hey you called this remotely!");
-    }
 
     public static void main(String[] args) {
         try {
@@ -251,6 +256,11 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
         } catch(UnknownHostException ex){
             ex.printStackTrace();
         }
+    }
+
+    @Override
+    public void remoteTest(){
+        System.out.println("Hey you called this remotely!");
     }
 
 
