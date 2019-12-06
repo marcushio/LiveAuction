@@ -113,9 +113,16 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
                     notifyWinner(stage);
                 }
                 item = storage.getRandomItem();
-                stages[i].replaceItem(item);
+                replaceStage(i,item);
             }
         }
+    }
+
+    private void replaceStage(int i, Item item){
+        Auction temp = new Auction(storage.getRandomItem());
+        stages[i] = temp;
+        Thread t = new Thread(temp);
+        t.start();
     }
 
     private void notifyWinner(Auction stage){
@@ -205,14 +212,12 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
         /**First Thing register at bank*/
         registerAtBank();
         initialize();
-        int count = 0;
         while(!Thread.interrupted()){
             try{
-                System.out.println(count++);
                 if(!external.isEmpty()) {
                     processBid();
                 }
-
+                checkOnAuctions();
                 /*if(!storage.isEmpty()){
                     removeStage();
                     addNewStage();
