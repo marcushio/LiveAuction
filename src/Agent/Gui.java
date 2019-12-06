@@ -26,11 +26,11 @@ public class Gui extends Application {
     private ListView currentBidsList = new ListView<>();
     private Button refreshBalance, submitBid, refreshBids, selectItem, refreshHousesList, selectHouse;
     private Text balance, availableFunds, selectedItem, selectedHouse, name;
-    private static TextArea userMessages = new TextArea("");
+    private TextArea userMessages = new TextArea("");
     private static Agent agent;
 
     public static void main (String [] args){
-        launch(args);
+        String status [] = new String[1];
         if(args.length>2) {
             {
                 String startingFunds = args[0];
@@ -43,22 +43,31 @@ public class Gui extends Application {
                     agent = new Agent(name, startingFunds, bankAddress);
                     agent.registerWithRMI();
                 } catch (Exception e) {
-                    userMessages.appendText("Issue with agent initialization.");
+                    launch(status);
                 }
             }
+            status [0] = "ok";
         }
-        else userMessages.appendText("Incorrect argument length from command line. Please exit and try again.");
+        launch(status);
+
     }
     public void setAgent(Agent agent){
         this.agent = agent;
     }
     @Override
     public void start(Stage primaryStage) {
+        int numArgs = getParameters().getRaw().size();
         makeLayout();
         setWindow();
         primaryStage.setScene(scene);
         primaryStage.setMaximized(true);
         primaryStage.setTitle("Auction App");
+        if (numArgs > 0){
+            bindVariables(agent);
+        }
+        else{
+            userMessages.appendText("Issue with setup. Please exit and try again.");
+        }
         primaryStage.show();
     }
     public void bindVariables(Agent agent){
