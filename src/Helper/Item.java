@@ -1,8 +1,9 @@
 package Helper;
 
+import java.io.Serializable;
 import java.util.UUID;
 /**Object representing the items in Auction House*/
-public class Item{
+public class Item implements Serializable {
     /**Name of the item, for display purpose only*/
     private final String NAME;
     /**Unique identity of a item*/
