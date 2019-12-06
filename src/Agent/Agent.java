@@ -91,6 +91,7 @@ public class Agent implements AgentRemoteService {
     public void registerWithRMI() throws RemoteException{
             AgentRemoteService thisService = this;
             AgentRemoteService stub = (AgentRemoteService) UnicastRemoteObject.exportObject( (AgentRemoteService) thisService, 0);
+            //TODO account for multiple agents either make them use same rmi or generate diff ports
             Registry registry = LocateRegistry.createRegistry(1099);
             registry.rebind("agentServer", stub);
     }
@@ -206,9 +207,6 @@ public class Agent implements AgentRemoteService {
         }
     }
 
-    public void register(BankRemoteService bankService) throws RemoteException {
-        accountID = bankService.registerAgent(getName().toString(),liquidFunds);
-    }
 
     public String getAccountID() {
         return accountID;
