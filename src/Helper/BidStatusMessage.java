@@ -5,5 +5,5 @@ package Helper;
  * to tell Agent instances what the result of their bid is.
  */
 public enum BidStatusMessage {
-    ACCEPTED, REJECTED, OUTBID, WINNER;
+    ACCEPTED, REJECTED, OUTBID, WINNER, LOSER;
 }
