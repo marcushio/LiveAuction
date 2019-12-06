@@ -127,8 +127,6 @@ public class Gui extends Application {
         submitBid.setOnAction(event -> handleSubmitBid());
         refreshBids.setOnAction(e->handleRefreshBids());
         refreshBalance.setOnAction(e->handleRefreshBalances());
-        balance = new Text("0.00");
-        availableFunds = new Text("0.00");
         selectedItem = new Text("");
         name = new Text("");
         column.getChildren().addAll(
@@ -151,8 +149,8 @@ public class Gui extends Application {
     private void handleSubmitBid() {
 
        try {
-          //agent.submitBid();
-           agent.test1();
+          agent.submitBid();
+
       }
      catch(RemoteException e){
 
@@ -210,13 +208,8 @@ public class Gui extends Application {
     }
 
     private void handleRefreshBids() {
-        try {
-            agent.test2();
-        }
-        catch(Exception ex){
 
-        }
-       /// agent.refreshBidList();
+
     }
 
     private void handleRefreshItems(){

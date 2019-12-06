@@ -49,14 +49,6 @@ public class Agent implements AgentRemoteService {
     private String bankName;
     private String IP;
 
-    public void test1() throws RemoteException {
-        Bid bid = new Bid("02",10.00);
-        bid.setBidderID(this.accountID);
-        bankService.blockFunds(bid,"ID");
-    }
-    public void test2() throws RemoteException {
-        bankService.transferBlockedFunds(accountID,"02");
-    }
     /**
      * Make new agent instance with given name and a starting amount of funds and register it with the bank.
      * @param name String specifying the agent's name. Can include first or full name.
@@ -143,8 +135,10 @@ public class Agent implements AgentRemoteService {
 
     public void refreshBalances() {
         try {
-            currentBalanceProperty.set(bankService.getBalanceString(accountID));
-            availableFundsProperty.set(bankService.getAvailableFundsString(accountID));
+            String balanceString = bankService.getBalanceString(accountID);
+            String availableFundsString = bankService.getAvailableFundsString(accountID);
+            currentBalanceProperty.set(balanceString);
+            availableFundsProperty.set(availableFundsString);
         } catch(RemoteException ex){
             System.err.println("couldn't refresh balance");
         }
