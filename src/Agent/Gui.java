@@ -18,6 +18,7 @@ import javafx.stage.WindowEvent;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.util.List;
+import java.util.Scanner;
 
 public class Gui extends Application {
     private Pane root;
@@ -27,7 +28,11 @@ public class Gui extends Application {
     private ListView <String> auctionHouseList = new ListView<>();
     private ListView currentBidsList = new ListView<>();
     private Button refreshBalance, submitBid, refreshBids, selectItem, refreshHousesList, selectHouse;
-    private Text balance, availableFunds, selectedItem, selectedHouse, name;
+    private Text balance = new Text("");
+    private Text availableFunds = new Text("");
+    private Text selectedItem = new Text("");
+    private Text selectedHouse = new Text("");
+    private Text name = new Text("");
     private TextArea userMessages = new TextArea("");
     private static Agent agent;
     private boolean isClosable = false;
@@ -155,7 +160,6 @@ public class Gui extends Application {
 
     private VBox makeItemsColumn(){
         VBox column = new VBox();
-        selectedHouse = new Text("");
         selectItem = new Button("Select");
         selectItem.setOnAction(e->handleSelectItem());
         ScrollPane scrollItems = new ScrollPane(itemList);
@@ -187,11 +191,15 @@ public class Gui extends Application {
     }
 
     private void handleSelectItem() {
-        selectedItem.setText(itemList.getSelectionModel().getSelectedItem());
+        String itemToString = itemList.getSelectionModel().getSelectedItem();
+        Scanner scanner = new Scanner(itemToString);
+        selectedItem.setText(scanner.next());
     }
 
     private void handleSelectHouse() {
-        agent.connectToHouse(auctionHouseList.getSelectionModel().getSelectedItem());
+        String selectedHouse = auctionHouseList.getSelectionModel().getSelectedItem();
+        agent.connectToHouse(selectedHouse);
+        this.selectedHouse.setText(selectedHouse);
         handleRefreshItems();
     }
 

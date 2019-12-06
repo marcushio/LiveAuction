@@ -11,5 +11,4 @@ public interface AgentRemoteService extends java.rmi.Remote {
      * @param bid Bid whose status is to be changed.
      */
     public void updateBid(Bid bid) throws RemoteException;
-    public void test() throws RemoteException;
 }

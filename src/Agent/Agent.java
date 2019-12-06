@@ -9,9 +9,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -21,8 +18,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import static Helper.BidStatusMessage.ACCEPTED;
 
@@ -40,6 +35,7 @@ public class Agent implements AgentRemoteService {
     private ObservableList<String> bidList = FXCollections.observableArrayList();
     private String accountID = "INVALID";
     private String ipAddress = "";
+    private String serverName = "";
     private double liquidFunds = 0.00;
     private ListProperty<AuctionHouse> availableHouses = new SimpleListProperty<>();
     private AuctionHouseRemoteService selectedHouse;
@@ -60,7 +56,8 @@ public class Agent implements AgentRemoteService {
      */
     public Agent(String name, String liquidFunds, String myAddress, String bankAddress) {
         this.name.set(name);
-
+        this.ipAddress = myAddress;
+        this.serverName = "agentServer";
         this.liquidFunds = Double.parseDouble(liquidFunds);
         try {
             connectToBank(bankAddress);
@@ -75,9 +72,7 @@ public class Agent implements AgentRemoteService {
             System.out.println("AGENT COULD NOT BE REMOTE");
         }
     }
-    public void test() throws RemoteException{
-        System.out.println("WE HAVE REMOTOE CALLS");
-    }
+
     private void connectToBank(String bankAddress) throws RemoteException, NotBoundException {
         String[] addressComponents = bankAddress.split("/" , 2);
         bankIP = addressComponents[0];
@@ -86,7 +81,6 @@ public class Agent implements AgentRemoteService {
         bankService = (BankRemoteService) rmiRegistry.lookup(bankName);
         accountID = bankService.registerAgent(name.get(), liquidFunds);
     }
-
     //TODO give agents unique names
     public void registerWithRMI() throws RemoteException{
             AgentRemoteService thisService = this;
@@ -113,15 +107,13 @@ public class Agent implements AgentRemoteService {
         }
     }
     public void refreshItemList() throws RemoteException{
-        /**Throw remote exception here*/
-
-        //List<Item> items = selectedHouse.getListedItems();
-       // List<String> itemStrings = new ArrayList<>();
-//        for(Item item : items){
-//            itemStrings.add(item.toString());
-//        }
-       // itemList.clear();
-       // itemList.addAll(itemStrings);
+         List<Item> items = selectedHouse.getListedItems();
+        List<String> itemStrings = new ArrayList<>();
+        for(Item item : items){
+            itemStrings.add(item.toString());
+        }
+        itemList.clear();
+        itemList.addAll(itemStrings);
     }
 
     public StringProperty getCurrentBalanceProperty() {
@@ -154,7 +146,7 @@ public class Agent implements AgentRemoteService {
             String addressComponents [] = selectedHouseAddress.split("/");
             Registry rmiRegistry = LocateRegistry.getRegistry(addressComponents[0]);
             selectedHouse = (AuctionHouseRemoteService) rmiRegistry.lookup(addressComponents[1]);
-            //refreshItemList();
+            refreshItemList();
             System.out.println("DONE");
         }
         catch(NotBoundException e){
@@ -163,6 +155,7 @@ public class Agent implements AgentRemoteService {
         }
         catch(RemoteException e){
             userMessages.set("REMOTE HOUSE COULDN'T BE REACHED");
+            e.printStackTrace();
         }
 
     }
@@ -177,10 +170,11 @@ public class Agent implements AgentRemoteService {
 
     public void submitBid() throws RemoteException{
         Bid bid = new Bid(selectedItemProperty.get(),Double.parseDouble(currentBidAmount.get()));
+        bid.setBidderID(accountID);
+        bid.setAgentIP(ipAddress);
         bid.setHouseAddress(selectedHouseProperty.get());
+        bid.setAgentServer(serverName);
         selectedHouse.makeBid(bid);
-        bidsMade.add(bid);
-        refreshBidList();
     }
 
     /**
