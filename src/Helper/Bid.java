@@ -64,9 +64,7 @@ public class Bid implements Serializable {
     public String getItemID(){
         return itemID;
     }
-    public Item getItem(){
-        return new Item("FAKE", 10);
-    }
+
 
     public double getBidAmount(){
         return dollarAmount;
@@ -126,4 +124,5 @@ public class Bid implements Serializable {
     public void setAgentServer(String agentServer) {
         this.agentServer = agentServer;
     }
+
 }

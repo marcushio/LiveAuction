@@ -123,9 +123,7 @@ public class Gui extends Application {
         VBox column = new VBox();
         refreshBalance = new Button("Refresh");
         submitBid = new Button("Bid!");
-        refreshBids = new Button("Refresh");
         submitBid.setOnAction(event -> handleSubmitBid());
-        refreshBids.setOnAction(e->handleRefreshBids());
         refreshBalance.setOnAction(e->handleRefreshBalances());
         selectedItem = new Text("");
         name = new Text("");
@@ -140,8 +138,7 @@ public class Gui extends Application {
                 submitBid,
                 new Separator(Orientation.HORIZONTAL),
                 new Text("Current Bids"),
-                currentBidsList,
-                refreshBids
+                currentBidsList
         );
         return column;
     }
@@ -160,15 +157,19 @@ public class Gui extends Application {
 
     private VBox makeItemsColumn(){
         VBox column = new VBox();
-        selectItem = new Button("Select");
+        HBox buttons = new HBox();
+        Button selectItem = new Button("Select");
         selectItem.setOnAction(e->handleSelectItem());
+        Button refreshItems = new Button("Refresh");
+        refreshItems.setOnAction(e->{handleRefreshItems();});
         ScrollPane scrollItems = new ScrollPane(itemList);
+        buttons.getChildren().addAll(selectItem, refreshItems);
         column.getChildren().addAll(
                 getLabeledNodeBox("Selected House: ", selectedHouse),
                 new Separator(Orientation.HORIZONTAL),
                 new Text("Items"),
                 scrollItems,
-                selectItem
+                buttons
         );
         return column;
     }
