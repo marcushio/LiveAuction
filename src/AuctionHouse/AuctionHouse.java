@@ -160,34 +160,39 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
     }
 
     /**Try process bid*/
-    private void processBid() throws InterruptedException{
-        Bid bid = external.take();
-        String address = bid.getAgentAddress();
-        boolean check;
-        if(bid != null) {
-            Item i = bid.getItem();
-            double price = bid.getPriceVal();
-            int index = findItem(i);
-            if (index > -1) {
-                Bid currentBid = stages[index].getMaxBid();
-                /**Check if the new bid amount is higher than current max bid*/
-                if (price > currentBid.getBidAmount()) {
-                    //check = bankService.sufficientFunds(address,price);
-                    /**Request bank to check affordable*/
-                    if (true) {
-                        /**Inform current bidder
-                         * outbid him with new bidder
-                         * reset 60 sec counter*/
-                        currentBid.setStatus(BidStatusMessage.OUTBID);
-                        bid.setStatus(BidStatusMessage.ACCEPTED);
+    private void processBid(){
+        try {
+            Bid bid = external.take();
+            String address = bid.getAgentAddress();
+            boolean check;
+            if (bid != null) {
+                Item i = bid.getItem();
+                double price = bid.getPriceVal();
+                int index = findItem(i);
+                if (index > -1) {
+                    Bid currentBid = stages[index].getMaxBid();
+                    /**Check if the new bid amount is higher than current max bid*/
+                    if (price > currentBid.getBidAmount()) {
+                        check = bankService.sufficientFunds(address, price);
+                        /**Request bank to check affordable*/
+                        if (check) {
+                            /**Inform current bidder
+                             * outbid him with new bidder
+                             * reset 60 sec counter*/
+                            currentBid.setStatus(BidStatusMessage.OUTBID);
+                            bid.setStatus(BidStatusMessage.ACCEPTED);
+                        }
                     }
+                } else {
+                    bid.setStatus(BidStatusMessage.REJECTED);
                 }
             } else {
-                bid.setStatus(BidStatusMessage.REJECTED);
-            }
-        }else{
 
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
+        //connectToAgent(address,agentService);
     }
 
     /**Register an account at bank with ID(Used as account ID?)*/
@@ -220,7 +225,7 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
         ///////
     }
 
-    private void connectToAgent(String agentAddress,String agentServer) {
+    private void connectToAgent(String agentAddress,String agentServer){
         try {
             Registry rmiRegistry = LocateRegistry.getRegistry(agentAddress);
             agentService = (AgentRemoteService) rmiRegistry.lookup(agentServer);
@@ -308,8 +313,8 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
              * if succeed, exit program
              * else recursively call exsit*/
             if(deregisterable()){
+                deRegisterAtBank();
                 Thread.currentThread().interrupt();
-
                 System.exit(0);
             }else{
                 userInterface();
