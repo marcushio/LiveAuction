@@ -38,8 +38,8 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
     private static Scanner scanner = new Scanner(System.in);
     /**Stores the item sold*/
     private BankRemoteService bankService;
-    private String bankName;
-    private String bankIP;
+    private String bankName = "bankServer";
+    private String bankIP = "127.0.0.1";
     private int bankPort;  //pretty sure we're just going to keep this the standard 1099 -marcus
 
 
