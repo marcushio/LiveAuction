@@ -37,8 +37,8 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
     private static Scanner scanner = new Scanner(System.in);
 
     private BankRemoteService bankService;
-    private String bankName;
-    private String bankIP;
+    private String bankName = "bankServer";
+    private String bankIP = "127.0.0.1";
     private int bankPort;  //pretty sure we're just going to keep this the standard 1099 -marcus
 
 
@@ -168,8 +168,8 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
         //code below is to connect to the bank over RMI
         try {
             Registry rmiRegistry = LocateRegistry.getRegistry(bankIP);
-            //bankService = (BankRemoteService) rmiRegistry.lookup(bankName);  //this is for remote machines
-            bankService = (BankRemoteService) Naming.lookup("bankServer"); // -this was used when on same pc;
+            bankService = (BankRemoteService) rmiRegistry.lookup(bankName);  //this is for remote machines
+            //bankService = (BankRemoteService) Naming.lookup("bankServer"); // -this was used when on same pc;
             accountNumber = bankService.registerAuctionHouse(InetAddress.getLocalHost().toString(), ID);
             //InetAddress.getLocalHost(); returns an InetAddress
             //InetAddress.getLocalHost().getHostAddress returns string...
