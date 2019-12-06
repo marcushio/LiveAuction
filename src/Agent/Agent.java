@@ -75,7 +75,9 @@ public class Agent implements AgentRemoteService {
             System.out.println("AGENT COULD NOT BE REMOTE");
         }
     }
-
+    public void test() throws RemoteException{
+        System.out.println("WE HAVE REMOTOE CALLS");
+    }
     private void connectToBank(String bankAddress) throws RemoteException, NotBoundException {
         String[] addressComponents = bankAddress.split("/" , 2);
         bankIP = addressComponents[0];
@@ -189,6 +191,7 @@ public class Agent implements AgentRemoteService {
     public void updateBid(Bid bid) throws RemoteException{
         bidsMade.add(bid);
         refreshBidList();
+        System.out.println("JAIME REACHED THIS");
     }
     public StringProperty getMessagesProperty() {
         return userMessages;
