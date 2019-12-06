@@ -1,7 +1,5 @@
 package Helper;
 
-import AuctionHouse.AuctionHouse;
-
 import java.util.UUID;
 /**Object representing the items in Auction House*/
 public class Item{
@@ -12,7 +10,7 @@ public class Item{
     /**Number value used to generate base price*/
     private final int RARITY;
     /**Start price of the item*/
-    private final double BASEPRICE;
+    private double basePrice;
 
     /**Constructs the item with name and rarity,
      * and generate a unique ID and base price*/
@@ -20,26 +18,37 @@ public class Item{
         NAME = name;
         ID = UUID.randomUUID().toString();
         RARITY = rarity;
-        BASEPRICE = (int)(Math.pow(10,RARITY)*(int)
+        basePrice = (int)(Math.pow(10,RARITY)*(int)
                 ((Math.random()*10)+1)*3.1415926*(Math.random()));
     }
 
+    /**Gets the name of item
+     * @return a string of item's name
+     * */
     public String getNAME(){
         return NAME;
     }
 
+    /**Gets the ID of item
+     * @return a string of item's ID
+     * */
     public String getID(){
         return ID;
     }
 
-    public double getBASEPRICE(){
-        return BASEPRICE;
+    /**Gets the base price of item
+     * @return double of item's base price
+     * */
+    public double getBasePrice(){
+        return basePrice;
     }
 
-    protected void reduceBASEPRICE(){
-        BASEPRICE = BASEPRICE*0.75;
+    /**Reduce a base price of the item by 25%*/
+    public void reduceBasePrice(){
+        basePrice *= 0.75;
     }
 
+    /**Compare the IDs of items to see if they are equal*/
     public boolean equals(Item i){
         if(ID == i.getID()){
             return true;
@@ -47,11 +56,4 @@ public class Item{
         return false;
     }
 
-    public int getRARITY(){
-        return RARITY;
-    }
-
-    public static void main(String args[]){
-        System.out.println((Math.pow(10,4)*(Math.random()*10)));
-    }
 }

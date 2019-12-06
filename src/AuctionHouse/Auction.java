@@ -1,23 +1,49 @@
 package AuctionHouse;
 
 import Agent.Agent;
+import Helper.Bid;
 import Helper.Item;
 
-public class Auction implements Runnable{
-    private Item item;
-    private double maxBid;
-    private double winningBid = 0;
-    private Agent agent;
-    private int waitCount;
-    private boolean auctionEnd = false;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 
-    public Auction(Item item){
+public class Auction implements Runnable{
+    /**Keeps track of item*/
+    private Item item;
+    /**Keep track of highest bid*/
+    private Bid maxBid;
+    /**Keeps track of the max bid amount*/
+    private double maxBidAmount;
+    /**Keeps track of the most recent bidder*/
+    private BlockingQueue<Bid> internal;
+    /**Times the bid*/
+    private int waitCount;
+    /**Variable to represent the auction status
+     * 0 - auction going
+     * 1 - item sold
+     * -1 - item recalled because of no bidder*/
+    private int auctionStatus;
+
+    public Auction(Item item, BlockingQueue internal){
         this.item = item;
-        maxBid = item.getBASEPRICE();
+        this.internal = internal;
+        maxBidAmount = item.getBasePrice();
         waitCount = 0;
+        auctionStatus = 0;
     }
 
-    public double getMaxBid(){
+    protected void replaceItem(Item item){
+        this.item = item;
+        maxBidAmount = item.getBasePrice();
+        waitCount = 0;
+        auctionStatus = 0;
+    }
+
+    public double getMaxBidAmount(){
+        return maxBidAmount;
+    }
+
+    public Bid getMaxBid(){
         return maxBid;
     }
 
@@ -26,55 +52,52 @@ public class Auction implements Runnable{
     }
 
     public boolean bidGoingOn(){
-        if(maxBid == item.getBASEPRICE()){
+        if(maxBidAmount == item.getBasePrice()){
             return false;
         }
         return true;
     }
 
     /**Out bid current current bid with a higher bid*/
-    protected void outBid(double amount, Agent a){
-        maxBid = amount;
-        agent = a;
+    protected void outBid(Bid bid){
+        maxBidAmount = bid.getBidAmount();
+        maxBid = bid;
         waitCount = 0;
     }
 
-    /**Get current agent*/
-    protected Agent getCurrentAgent(){
-        return agent;
-    }
-
     public String toString(){
-        String s = "Item on Stage: "+item.getNAME()+" $"+maxBid;
+        String s = "Item on Stage: "+item.getNAME()+" $"+maxBidAmount;
         return s;
     }
 
-    /**Tells the auction house if auction is done
-     * @return true if auction ended (after 60 sec counter)
+    /**Tells the auction house the auction status
+     * @return integer representing the status
      * */
-    protected boolean isAuctionEnd(){
-        return auctionEnd;
+    protected int getAuctionStatus(){
+        return auctionStatus;
     }
 
+    /**Called when some one bids to reset count down*/
     protected void resetCount(){
         waitCount = 0;
     }
 
+    /**Runs this thread*/
     public void run(){
-        System.out.println("    "+item.getNAME()+" $"+maxBid);
+        System.out.println("    "+item.getNAME()+" $"+maxBidAmount);
         while(!Thread.interrupted()){
             try{
                 if(waitCount == 60){
                     /**If some one bid on the item*/
-                    if(agent != null){
-                        winningBid = maxBid;
-                        /**Tell auction house the winning bidder/item/price*/
+                    if(false){
+                        auctionStatus = 1;
+                        /**Tell auction house house winning bidder/item/price*/
                     }else{
+                        auctionStatus = -1;
                         System.out.println("    No one bids on "+item.getNAME());
                         /**No one bid on this item, tell auction house to
                          * replace it with a new item*/
                     }
-                    auctionEnd = true;
                     Thread.currentThread().interrupt();
                     break;
                 }else {

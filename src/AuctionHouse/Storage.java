@@ -57,7 +57,7 @@ public class Storage {
     /**Method called when item is not sold and placed back to storage
      * the item base price will drop by 25%*/
     protected void putBack(Item i){
-        i.reduceBASPRICE();
+        i.reduceBasePrice();
         items.add(i);
     }
 
