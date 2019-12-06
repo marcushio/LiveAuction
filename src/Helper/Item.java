@@ -36,6 +36,10 @@ public class Item{
         return BASEPRICE;
     }
 
+    protected void reduceBASEPRICE(){
+        BASEPRICE = BASEPRICE*0.75;
+    }
+
     public boolean equals(Item i){
         if(ID == i.getID()){
             return true;
