@@ -45,7 +45,8 @@ public class BankAccount {
      */
     public synchronized boolean withdraw(double amount){
         if( (this.availableBalance - amount) > 0 ) {
-            this.availableBalance = this.availableBalance - amount;
+           // this.availableBalance = this.availableBalance - amount;
+            this.totalBalance = this.totalBalance - amount;
             return true;
         }
         return false;
