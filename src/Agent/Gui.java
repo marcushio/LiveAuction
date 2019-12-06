@@ -64,7 +64,11 @@ public class Gui extends Application {
     public void start(Stage primaryStage) {
         primaryStage.setOnCloseRequest((WindowEvent windowEvent) -> {
             windowEvent.consume();
-            if(this.isClosable()) System.exit(0);
+            if(agent.canExit()) System.exit(0);
+            else {
+                userMessages.appendText("Could not exit because of unresolved bids.");
+            }
+
         });
         int numArgs = getParameters().getRaw().size();
         makeLayout();
@@ -170,9 +174,6 @@ public class Gui extends Application {
         return column;
     }
 
-    private boolean isClosable(){
-        return true;
-    }
     private VBox makeHousesColumn(){
         VBox column = new VBox();
         HBox buttons = new HBox();

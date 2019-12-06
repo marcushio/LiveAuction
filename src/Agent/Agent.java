@@ -24,6 +24,8 @@ import java.util.Set;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import static Helper.BidStatusMessage.ACCEPTED;
+
 /**
  * Agent is the model used by Gui. It interacts with the servers. The Gui instance updates Agent's appropriate
  * members through bindings and the Agent instance updates its other bound variables to reflect changes resulting
@@ -75,22 +77,6 @@ public class Agent implements AgentRemoteService {
         bankService = (BankRemoteService) rmiRegistry.lookup(bankName);
         accountID = bankService.registerAgent(name.get(),Double.valueOf(liquidFunds));
     }
-        //////////////////////IP STUFF
-//
-//        InetAddress ip;
-//        String hostname;
-//        try {
-//            ip = InetAddress.getLocalHost();
-//            hostname = ip.getHostName();
-//            System.out.println("Your current IP address : " + ip);
-//            System.out.println("Your current Hostname : " + hostname);
-//
-//        } catch (UnknownHostException e) {
-//
-//            e.printStackTrace();
-//        }
-
-        ///////////////////////////////
 
 
 
@@ -215,5 +201,12 @@ public class Agent implements AgentRemoteService {
 
     public String getAccountID() {
         return accountID;
+    }
+
+    public boolean canExit() {
+        for(Bid bid : bidsMade){
+            if(bid.getStatus() == ACCEPTED) return false;
+        }
+        return true;
     }
 }

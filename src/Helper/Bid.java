@@ -88,4 +88,8 @@ public class Bid implements Serializable {
     public void setHouseAddress(String houseAddress) {
         this.houseAddress = houseAddress;
     }
+
+    public BidStatusMessage getStatus() {
+        return status;
+    }
 }

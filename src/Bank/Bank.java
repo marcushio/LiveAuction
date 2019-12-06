@@ -142,6 +142,7 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
         System.out.println("Registering Auction House: " + name);
         BankAccount newAccount = new BankAccount(getNewBankAccountId(), name, 0);
         clientAccounts.put(newAccount.getAccountNumber(), newAccount);
+        address = address + "/" + name;
         auctionHouseAddresses.add(address);
         System.out.println("Auction House registered!");
         return newAccount.getAccountNumber();
