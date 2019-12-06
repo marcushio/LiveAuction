@@ -34,7 +34,6 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
     private boolean balance;
     /**Queue of bid objects to process*/
     private BlockingQueue<Bid> external = new LinkedBlockingDeque<>();
-    private BlockingQueue<Bid> internal = new LinkedBlockingDeque<>();
     private static Scanner scanner = new Scanner(System.in);
     /**Stores the item sold*/
     private BankRemoteService bankService;
@@ -135,7 +134,7 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
     }
 
     /**Try process bid*/
-    public void processBid() throws InterruptedException{
+    private void processBid() throws InterruptedException{
         Bid bid = external.take();
         if(bid != null) {
             Item i = bid.getItem();
@@ -213,6 +212,7 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
                 if(!external.isEmpty()) {
                     processBid();
                 }
+
                 /*if(!storage.isEmpty()){
                     removeStage();
                     addNewStage();

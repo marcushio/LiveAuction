@@ -1,11 +1,8 @@
 package AuctionHouse;
-
-import Agent.Agent;
 import Helper.Bid;
 import Helper.Item;
 
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingDeque;
 
 public class Auction implements Runnable{
     /**Keeps track of item*/
@@ -24,9 +21,10 @@ public class Auction implements Runnable{
      * -1 - item recalled because of no bidder*/
     private int auctionStatus;
 
-    public Auction(Item item, BlockingQueue internal){
+    public Auction(Item item){
         this.item = item;
         this.internal = internal;
+        this.maxBid = new Bid(item.getID(),item.getBasePrice());
         maxBidAmount = item.getBasePrice();
         waitCount = 0;
         auctionStatus = 0;
@@ -98,6 +96,7 @@ public class Auction implements Runnable{
                         /**No one bid on this item, tell auction house to
                          * replace it with a new item*/
                     }
+                    internal.put(maxBid);
                     Thread.currentThread().interrupt();
                     break;
                 }else {
