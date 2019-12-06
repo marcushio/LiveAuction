@@ -26,6 +26,7 @@ public class Bid implements Serializable {
         return true;
     }
     @Override
+
     /**
      * {@inheritDoc}
      */
