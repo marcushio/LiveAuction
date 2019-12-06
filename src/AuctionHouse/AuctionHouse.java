@@ -27,7 +27,7 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
     private int itemCount = 3;
     /**Object containing all items*/
     private Storage storage;
-    private static String book = "C:/Items.txt";
+    private static String book = "/nfs/student/z/zjamiey/Documents/DistributedAuction/Resource/Items.txt";
     public Auction[] stages;
     private static int portNumber;
     private String accountNumber;
@@ -36,11 +36,11 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
     private BlockingQueue<Bid> external = new LinkedBlockingDeque<>();
     private static Scanner scanner = new Scanner(System.in);
     /**Stores the item sold*/
-    private InetAddress ip;
+    private String ip;
     private String hostname;
     private BankRemoteService bankService;
     private String bankName = "bankServer";
-    private String bankIP = "127.0.0.1";
+    private static String bankIP;
     private int bankPort;  //pretty sure we're just going to keep this the standard 1099 -marcus
 
 
@@ -60,6 +60,10 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
         return items;
     }
 
+    public String getItem(){
+        return "Please work";
+    }
+
     /**Return the ID of this auction house*/
     public String getID(){
         return ID;
@@ -68,7 +72,9 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
     /**make the remote server*/
     private void initialize(){
         try{
-            ip = InetAddress.getLocalHost();
+            InetAddress ipp = InetAddress.getLocalHost();
+            String name = ipp.getHostName();
+            InetAddress realIP = InetAddress.getByName(name);
             hostname = ID;
             System.out.println("Your current IP address: "+ip);
         }catch (UnknownHostException e){
@@ -81,7 +87,7 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
             AuctionHouseRemoteService stub = (AuctionHouseRemoteService)
                     UnicastRemoteObject.exportObject((AuctionHouseRemoteService)thisServer, 0);
             System.out.println("Auction House made, now binding");
-            Registry registry = LocateRegistry.createRegistry(portNumber);
+            Registry registry = LocateRegistry.createRegistry(1099);
             registry.rebind(ID, stub);
             System.out.println("Server created... server running...");
         } catch (RemoteException ex) {
@@ -121,6 +127,8 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
             if( status != 0){
                 if(status == 1){
                     notifyWinner(stage);
+                }else{
+                    storage.putBack(stages[i].getItem());
                 }
                 item = storage.getRandomItem();
                 replaceStage(i,item);
@@ -185,7 +193,7 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
             Registry rmiRegistry = LocateRegistry.getRegistry(bankIP);
             bankService = (BankRemoteService) rmiRegistry.lookup(bankName);  //this is for remote machines
             //bankService = (BankRemoteService) Naming.lookup("bankServer"); // -this was used when on same pc;
-            accountNumber = bankService.registerAuctionHouse(ip.toString(), ID);
+            accountNumber = bankService.registerAuctionHouse(ip, ID);
             //InetAddress.getLocalHost(); returns an InetAddress
             //InetAddress.getLocalHost().getHostAddress returns string...
         } catch(IOException e){
@@ -220,8 +228,8 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
     @Override
     public void run() {
         /**First Thing register at bank*/
-        registerAtBank();
         initialize();
+        registerAtBank();
         while(!Thread.interrupted()){
             try{
                 if(!external.isEmpty()) {
@@ -295,11 +303,13 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
     }
 
     public static void main(String args[]) throws IOException {
-        if(args.length > 0) {
-            portNumber = Integer.parseInt(args[0]);
+        if(args.length >2) {
             Storage storage = new Storage(book);
             storage.initialize();
             AuctionHouse auctionHouse = new AuctionHouse(storage);
+            auctionHouse.bankIP = args[0];
+            auctionHouse.portNumber = Integer.parseInt(args[1]);
+            auctionHouse.ip = args[2];
             Thread t = new Thread(auctionHouse);
             t.start();
             auctionHouse.userInterface();

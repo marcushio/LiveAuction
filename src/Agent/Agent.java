@@ -133,7 +133,7 @@ public class Agent implements AgentRemoteService {
         return currentBalanceProperty;
     }
 
-    public StringProperty getAvailableFundsAvailableFundsProperty() {
+    public StringProperty getAvailableFundsProperty() {
         return availableFundsProperty;
     }
 
