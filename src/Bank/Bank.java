@@ -171,6 +171,8 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
         //remove bank account
         //remove auctionhouse from list
         //remove
+
+        System.out.println("account: " + accountId + " deregistered");
         if (clientAccounts.get(accountId) == null) {
             System.out.println("There was no account with that number");
             return false;
