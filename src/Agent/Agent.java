@@ -14,6 +14,8 @@ import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -45,6 +47,8 @@ public class Agent implements AgentRemoteService {
     private StringProperty name = new SimpleStringProperty("Unknown Human");
     private StringProperty selectedItemProperty = new SimpleStringProperty("NONE");
     private BankRemoteService bankService;
+    private String bankIP;
+    private String bankName;
 
     /**
      * Make new agent instance with given name and a starting amount of funds and register it with the bank.
@@ -54,8 +58,14 @@ public class Agent implements AgentRemoteService {
     public Agent(String name, String liquidFunds, String bankAddress) {
         this.name.set(name);
         this.liquidFunds = Double.parseDouble(liquidFunds);
+
+        String[] addressComponents = bankAddress.split("/" , 2);
+        bankIP = addressComponents[0];
+        bankName = addressComponents[1];
        try {
-            bankService = (BankRemoteService) Naming.lookup(bankAddress);
+            //bankService = (BankRemoteService) Naming.lookup(bankAddress);
+           Registry rmiRegistry = LocateRegistry.getRegistry(bankIP);
+           bankService = (BankRemoteService) rmiRegistry.lookup(bankName);
         }
         catch(IOException e){
             userMessages.set("IO Exception Could not connect to bank");
