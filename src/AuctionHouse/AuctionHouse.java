@@ -27,7 +27,7 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
     private int itemCount = 3;
     /**Object containing all items*/
     private Storage storage;
-    private static String book = "/nfs/student/z/zjamiey/Documents/DistributedAuction/Resource/Items.txt";
+    private static String book = "/nfs/student/student/m/marcustrujillo/Documents/auction/DistributedAuction/Resource/Items.txt";
     public Auction[] stages;
     private static int portNumber;
     private String accountNumber;
@@ -49,6 +49,10 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
         this.storage = storage;
         ID = UUID.randomUUID().toString();
         stages = new Auction[itemCount];
+    }
+
+    public void setBankIP(String newIP){
+        this.bankIP = newIP;
     }
 
     /**Return a list of items in this Auction*/

@@ -86,7 +86,7 @@ public class Agent implements AgentRemoteService {
             AgentRemoteService thisService = this;
             AgentRemoteService stub = (AgentRemoteService) UnicastRemoteObject.exportObject( (AgentRemoteService) thisService, 0);
             //TODO account for multiple agents either make them use same rmi or generate diff ports
-            Registry registry = LocateRegistry.createRegistry(1099);
+            Registry registry = LocateRegistry.createRegistry(1099);// be ready to change back to 1099, 12345 is just for same comp as bank
             registry.rebind("agentServer", stub);
     }
     public ObservableList<String> getItemStringList(){

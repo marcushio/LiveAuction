@@ -23,7 +23,7 @@ public interface BankRemoteService extends java.rmi.Remote{
      * @return return true if unblocked fund > amountNeeded, else return false
      * Suggestion: change account number to agent's ID, cuz AH shouldn't know their account number
      * */
-    public boolean sufficientFunds(int accountNumber, int amountNeeded) throws RemoteException;
+    public boolean sufficientFunds(String accountNumber, double amountNeeded) throws RemoteException;
 
 
     /**
