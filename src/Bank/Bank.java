@@ -1,6 +1,7 @@
 package Bank;
 
 import Helper.BankRemoteService;
+import Helper.Bid;
 import Helper.BlockedFund;
 
 import java.net.InetAddress;
@@ -56,6 +57,11 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
         BankAccount payeeAccount = clientAccounts.get(transferFund.getAuctionHouseAccountId());
         successful = payeeAccount.deposit(transferFund.getAmount());  //if it succesfully put the money in it returns true
         return successful;
+    }
+
+    public boolean unblockFunds(String accountID, String itemID){
+        BankAccount account = clientAccounts.get(accountID);
+        return account.unblockFunds(itemID);
     }
 
     /**
@@ -120,6 +126,34 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
     }
 
     /**
+     *
+     * @param newbid that the funds are being blocked for
+     * @param oldbid
+     * @param auctionHouseAccountID
+     * @return
+     * @throws RemoteException
+     */
+    @Override
+    public synchronized boolean attemptBlockFunds(Bid newbid, Bid oldbid, String auctionHouseAccountID) throws RemoteException{
+        BankAccount oldbidAccount = clientAccounts.get(oldbid.getBidderID());
+        BankAccount newbidAccount = clientAccounts.get(newbid.getBidderID());
+        String itemID = oldbid.getItemID();
+        blockFunds(newbid, auctionHouseAccountID);
+        oldbidAccount.unblockFunds(itemID);
+        return true;
+    }
+
+    private boolean blockFunds(Bid bid, String auctionHouseAccountID){
+        String itemID = bid.getItemID();
+        double amount = bid.getBidAmount();
+        String accountID = bid.getBidderID();
+        BankAccount account = clientAccounts.get(accountID);
+        return account.blockFunds(amount, itemID, auctionHouseAccountID );
+    }
+
+
+
+    /**
      * Create a new account with the given attributes and return the associated account number
      * @param name Name of the person who needs an account
      * @param initialBalance Starting balance for the account
@@ -146,17 +180,6 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
         auctionHouseAddresses.add(address);
         System.out.println("Auction House registered!");
         return newAccount.getAccountNumber();
-    }
-
-    /**
-     * unblock the funds that were set aside for a particular auction item.
-     *
-     * @return true if the funds were unblocked, else false
-     * @throws RemoteException
-     */
-    @Override
-    public boolean unblockFunds(int accountNumber, int itemId) throws RemoteException {
-        return clientAccounts.get(accountNumber).unblockFunds(itemId);
     }
 
     /**

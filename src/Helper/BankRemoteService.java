@@ -44,7 +44,7 @@ public interface BankRemoteService extends java.rmi.Remote{
      * @return return true if fund unblocked, else return false
      * Suggestion: return the current unblocked fund to agent so they know their current amount?
      * */
-    public boolean unblockFunds(int accountNumber, int itemId) throws RemoteException;
+    //public boolean unblockFunds(int accountNumber, int itemId) throws RemoteException;
 
     /**
      * Delete account of given account number, and transfer amount in the account
@@ -93,6 +93,14 @@ public interface BankRemoteService extends java.rmi.Remote{
      * @return String reflecting the difference between the account balance and total of all blocked funds for the account
      */
     String getAvailableFundsString(String accountID) throws RemoteException;
+
+    /**
+     *
+     * @param newbid that the funds are being blocked for
+     * @return
+     * @throws RemoteException
+     */
+    public boolean attemptBlockFunds(Bid newbid, Bid oldBid,  String auctionHouseAccountID) throws RemoteException;
 
     public void remoteTest() throws RemoteException;
 
