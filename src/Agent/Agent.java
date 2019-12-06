@@ -84,6 +84,7 @@ public class Agent implements AgentRemoteService {
         bankService = (BankRemoteService) rmiRegistry.lookup(bankName);
         accountID = bankService.registerAgent(name.get(), liquidFunds);
     }
+
     //TODO give agents unique names
     public void registerWithRMI() throws RemoteException{
             AgentRemoteService thisService = this;

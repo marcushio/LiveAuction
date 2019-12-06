@@ -79,7 +79,7 @@ public class Auction implements Runnable{
     }
 
     /**Runs this thread*/
-    public void run(){
+    public synchronized void run(){
         System.out.println("    "+item.getNAME()+" $"+maxBidAmount);
         while(!Thread.interrupted()){
             try{

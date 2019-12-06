@@ -39,6 +39,7 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
     private String ip;
     private String hostname;
     private BankRemoteService bankService;
+    private AgentRemoteService agentService;
     private String bankName = "bankServer";
     private static String bankIP;
     private int bankPort;  //pretty sure we're just going to keep this the standard 1099 -marcus
@@ -215,6 +216,17 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
         ///////
     }
 
+    private void connectToAgent(String agentAddress,String agentServer) {
+        try {
+            Registry rmiRegistry = LocateRegistry.getRegistry(agentAddress);
+            agentService = (AgentRemoteService) rmiRegistry.lookup(agentServer);
+            agentService.updateBid(new Bid("asdasdasd", 12083));
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
     /**Deregister at bank*/
     private void deRegisterAtBank(){
         /**Deregister at bank and receive money in account*/
@@ -226,10 +238,11 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
     }
 
     @Override
-    public void run() {
+    public synchronized void run() {
         /**First Thing register at bank*/
         initialize();
         registerAtBank();
+        connectToAgent("64.106.20.248","agentServer");
         while(!Thread.interrupted()){
             try{
                 if(!external.isEmpty()) {

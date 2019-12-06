@@ -92,4 +92,12 @@ public class Bid implements Serializable {
     public BidStatusMessage getStatus() {
         return status;
     }
+
+    public String getAgentAddress() {
+        return agentAddress;
+    }
+
+    public void setAgentAddress(String agentAddress) {
+        this.agentAddress = agentAddress;
+    }
 }
