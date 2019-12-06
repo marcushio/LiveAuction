@@ -18,12 +18,12 @@ public interface BankRemoteService extends java.rmi.Remote{
 
     /**
      * Ask the bank if bidder have sufficient money to make this bid
-     * @param address This account number of agent
+     * @param accountNumber This account number of agent
      * @param amountNeeded The amount that agent should have as unblocked fund
      * @return return true if unblocked fund > amountNeeded, else return false
      * Suggestion: change account number to agent's ID, cuz AH shouldn't know their account number
      * */
-    public boolean sufficientFunds(String address, double amountNeeded) throws RemoteException;
+    public boolean sufficientFunds(String accountNumber, double amountNeeded) throws RemoteException;
 
 
     /**

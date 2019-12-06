@@ -22,13 +22,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Bank implements BankRemoteService { //extends UnicastRemoteObject
     //private static final long serialVersionUID = 1L; /** this needs to be changed to a specific long **/
     private static int currentId = 0;
-    //private ExecutorService threadRunner = Executors.newCachedThreadPool(); //service to run connected clients
-    private ConcurrentHashMap<String, BankAccount> clientAccounts = new ConcurrentHashMap<String, BankAccount>();
+    private ConcurrentHashMap<String, BankAccount> clientAccounts = new ConcurrentHashMap<String, BankAccount>();//<String accountID, BankAccount>
     private List<String> agentNameList = new ArrayList<>();
-    private List<String> auctionHouseAddresses = new ArrayList<>();
+    private List<String> auctionHouseAddresses = new ArrayList<>(); //
 
     //public Bank() throws RemoteException { }
-
 
     /**
      * Returns the balance for the account specified by the given integer
@@ -94,7 +92,7 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
      * @throws RemoteException
      */
     @Override
-    public boolean sufficientFunds(int accountNumber, int amountNeeded) throws RemoteException {
+    public boolean sufficientFunds(String accountNumber, double amountNeeded) throws RemoteException {
         BankAccount account = clientAccounts.get(accountNumber);
         if (account.getAvailableBalance() >= amountNeeded) {
             return true;
@@ -111,8 +109,8 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
      * @throws RemoteException
      */
     @Override
-    public String registerAgent(String name, double initialBalance) throws RemoteException {
-        System.out.println("Hey we're registering an agent!");
+    public synchronized String registerAgent(String name, double initialBalance) throws RemoteException {
+        System.out.println("Registering agent: " + name);
         String newId = getNewBankAccountId();
         BankAccount newAccount = new BankAccount(newId, name, initialBalance);
         clientAccounts.put(newAccount.getAccountNumber(), newAccount);
@@ -173,8 +171,6 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
         //remove bank account
         //remove auctionhouse from list
         //remove
-
-        System.out.println("account: " + accountId + " deregistered");
         if (clientAccounts.get(accountId) == null) {
             System.out.println("There was no account with that number");
             return false;
@@ -182,7 +178,7 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
         BankAccount toBeDeleted = clientAccounts.get(accountId);
         //String name = toBeDeleted.get
         clientAccounts.remove(accountId);
-
+        System.out.println("account: " + accountId + " deregistered");
         return true;
     }
 
