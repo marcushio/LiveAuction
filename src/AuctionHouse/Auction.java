@@ -61,6 +61,12 @@ public class Auction implements Runnable{
         waitCount = 0;
     }
 
+    public void updateBid(Bid bid){
+        maxBid = bid;
+        maxBidAmount = bid.getBidAmount();
+        item.updateMax(maxBidAmount);
+    }
+
     public String toString(){
         String s = "Item on Stage: "+item.getNAME()+" $"+maxBidAmount;
         return s;

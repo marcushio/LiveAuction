@@ -13,6 +13,8 @@ public class Item implements Serializable {
     private final int RARITY;
     /**Start price of the item*/
     private double basePrice;
+    /***/
+    private double maxPrice;
 
     /**Constructs the item with name and rarity,
      * and generate a unique ID and base price*/
@@ -22,6 +24,7 @@ public class Item implements Serializable {
         RARITY = rarity;
         basePrice = (int)(Math.pow(10,RARITY)*(int)
                 ((Math.random()*10)+1)*3.1415926*(Math.random()));
+        maxPrice = basePrice;
     }
 
     /**Gets the name of item
@@ -29,6 +32,10 @@ public class Item implements Serializable {
      * */
     public String getNAME(){
         return NAME;
+    }
+
+    public void updateMax(double p){
+        maxPrice = p;
     }
 
     /**Gets the ID of item
@@ -62,7 +69,7 @@ public class Item implements Serializable {
      */
     @Override
     public String toString(){
-        return NAME+" "+ID;
+        return NAME+" $%.2f"+maxPrice+" "+ID;
     }
 
 }

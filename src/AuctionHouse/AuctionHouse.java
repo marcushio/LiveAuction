@@ -163,6 +163,7 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
     /**Try process bid*/
     private void processBid(){
         try {
+            Auction auction;
             Bid newBid = external.take();
             String address;
             String server;
@@ -172,7 +173,8 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
                 double price = newBid.getPriceVal();
                 int index = findItem(i);
                 if (index > -1) {
-                    Bid oldBid = stages[index].getMaxBid();
+                    auction = stages[index];
+                    Bid oldBid = auction.getMaxBid();
                         address = oldBid.getAgentIP();
                         server = oldBid.getAgentServer();
                     /**Check if the new bid amount is higher than current max bid*/
@@ -190,6 +192,7 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
                                 agentService.updateBid(oldBid);
                             }
                             newBid.setStatus(BidStatusMessage.ACCEPTED);
+                            auction.updateBid(newBid);
                             //bankService.unblockFunds();
                         }
                     }
@@ -200,6 +203,7 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
                 server = newBid.getAgentServer();
                 connectToAgent(address, server);
                 agentService.updateBid(newBid);
+
             }
         }catch (Exception e){
             e.printStackTrace();
