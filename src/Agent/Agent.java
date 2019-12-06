@@ -24,6 +24,8 @@ import java.util.Set;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import static Helper.BidStatusMessage.ACCEPTED;
+
 /**
  * Agent is the model used by Gui. It interacts with the servers. The Gui instance updates Agent's appropriate
  * members through bindings and the Agent instance updates its other bound variables to reflect changes resulting
@@ -133,7 +135,7 @@ public class Agent implements AgentRemoteService {
         return currentBalanceProperty;
     }
 
-    public StringProperty getAvailableFundsAvailableFundsProperty() {
+    public StringProperty getAvailableFundsProperty() {
         return availableFundsProperty;
     }
 
@@ -215,5 +217,12 @@ public class Agent implements AgentRemoteService {
 
     public String getAccountID() {
         return accountID;
+    }
+
+    public boolean canExit() {
+        for(Bid bid : bidsMade){
+            if(bid.getStatus() == ACCEPTED) return false;
+        }
+        return true;
     }
 }
