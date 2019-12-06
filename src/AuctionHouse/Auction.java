@@ -25,6 +25,13 @@ public class Auction implements Runnable{
         return item;
     }
 
+    public boolean bidGoingOn(){
+        if(maxBid == item.getBASEPRICE()){
+            return false;
+        }
+        return true;
+    }
+
     /**Out bid current current bid with a higher bid*/
     protected void outBid(double amount, Agent a){
         maxBid = amount;

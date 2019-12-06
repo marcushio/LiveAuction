@@ -186,12 +186,9 @@ public class Agent implements AgentRemoteService {
     public void submitBid() throws RemoteException{
         Bid bid = new Bid(selectedItemProperty.get(),Double.parseDouble(currentBidAmount.get()));
         bid.setHouseAddress(selectedHouseProperty.get());
-        BidStatusMessage status = selectedHouse.makeBid(bid);
-        if(status == BidStatusMessage.REJECTED) userMessages.set("Bid was rejected");
-        else {
-            bidsMade.add(bid);
-            refreshBidList();
-        }
+        selectedHouse.makeBid(bid);
+        bidsMade.add(bid);
+        refreshBidList();
     }
 
     /**
