@@ -12,7 +12,9 @@ import java.io.Serializable;
 public class Bid implements Serializable {
     private static final long serialVersionUID = -4705472581793918514L;
     private String itemID;
-    private String agentAddress;
+    private String bidderID;
+    private String agentIP;
+    private String agentServer;
     private double dollarAmount= 0.00;
     private String houseAddress = "";
     private BidStatusMessage status = BidStatusMessage.REJECTED;
@@ -75,6 +77,9 @@ public class Bid implements Serializable {
         return dollarAmount;
     }
 
+    public void setBidderID(String bidderID){
+        this.bidderID = bidderID;
+    }
     /**
      * Set the status of this bid. AuctionHouse should update this and send it back.
      * @param status New and updated status of this bid.
@@ -95,11 +100,20 @@ public class Bid implements Serializable {
         return status;
     }
 
-    public String getAgentAddress() {
-        return agentAddress;
+
+    public String getAgentIP() {
+        return agentIP;
     }
 
-    public void setAgentAddress(String agentAddress) {
-        this.agentAddress = agentAddress;
+    public void setAgentIP(String agentIP) {
+        this.agentIP = agentIP;
+    }
+
+    public String getAgentServer() {
+        return agentServer;
+    }
+
+    public void setAgentServer(String agentServer) {
+        this.agentServer = agentServer;
     }
 }

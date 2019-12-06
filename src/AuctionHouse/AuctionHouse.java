@@ -60,8 +60,8 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
         return items;
     }
 
-    public String getItem(){
-        return "Please work";
+    public Item getItem(){
+        return getListedItems().get(0);
     }
 
     /**Return the ID of this auction house*/
