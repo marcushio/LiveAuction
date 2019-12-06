@@ -31,24 +31,23 @@ public class Gui extends Application {
 
     public static void main (String [] args){
         launch(args);
-        if(args.length>2)
-        {
-            String startingFunds = args[0];
-            String bankAddress = args[args.length-1];
-            String name = "";
-            for(int i = 1; i < args.length-1; i++){
-                name += args[i] + " ";
+        if(args.length>2) {
+            {
+                String startingFunds = args[0];
+                String bankAddress = args[args.length - 1];
+                String name = "";
+                for (int i = 1; i < args.length - 1; i++) {
+                    name += args[i] + " ";
+                }
+                try {
+                    agent = new Agent(name, startingFunds, bankAddress);
+                    agent.registerWithRMI();
+                } catch (Exception e) {
+                    userMessages.appendText("Issue with agent initialization.");
+                }
             }
-            try {
-                agent = new Agent(name, startingFunds, bankAddress);
-                agent.registerWithRMI();
-            }
-            catch(Exception e){
-
-            }
-
         }
-
+        else userMessages.appendText("Incorrect argument length from command line. Please exit and try again.");
     }
     public void setAgent(Agent agent){
         this.agent = agent;
@@ -61,12 +60,6 @@ public class Gui extends Application {
         primaryStage.setMaximized(true);
         primaryStage.setTitle("Auction App");
         primaryStage.show();
-        try {
-            handleParams();
-        }
-        catch(Exception e){
-            userMessages.setText("Issue with agent initialziation.");
-        }
     }
     public void bindVariables(Agent agent){
         name.textProperty().set(agent.getName().get());
@@ -192,20 +185,6 @@ public class Gui extends Application {
         agent.refreshBidList();
     }
 
-    private void handleParams() throws Exception {
-        List<String> params = getParameters().getRaw();
-        if(params.size()>2)
-        {
-            String startingFunds = params.get(0);
-            String bankAddress = params.get(params.size()-1);
-            String name = "";
-            for(int i = 1; i < params.size()-1; i++){
-                name += params.get(i) + " ";
-            }
-            agent = new Agent(name,startingFunds,bankAddress);
-            agent.registerWithRMI();
-        }
-    }
     private void handleRefreshItems(){
         try {
             agent.refreshItemList();
