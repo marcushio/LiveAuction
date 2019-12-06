@@ -3,7 +3,9 @@ package Bank;
 import Helper.BankRemoteService;
 import Helper.BlockedFund;
 
+import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.UnknownHostException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -204,6 +206,8 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
 
     public static void main(String[] args) {
         try {
+            System.out.println("");
+            System.out.println(InetAddress.getByName(InetAddress.getLocalHost().getHostName()).toString() );
             System.out.println("making bank...");
             BankRemoteService bankServer = new Bank();
             BankRemoteService stub = (BankRemoteService) UnicastRemoteObject.exportObject( (BankRemoteService) bankServer, 0);
@@ -214,6 +218,8 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
 
         } catch (RemoteException ex) {
             System.err.println("Remote exception while making a new bank.");
+        } catch(UnknownHostException ex){
+            ex.printStackTrace();
         }
     }
 
