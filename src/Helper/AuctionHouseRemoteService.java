@@ -4,9 +4,9 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 public interface AuctionHouseRemoteService extends java.rmi.Remote {
+
     /**
      * Return a list of all items from the AuctionHouse
-     *
      * @return a list of items from the auction house
      */
     public List<Item> getListedItems() throws RemoteException;
@@ -19,6 +19,11 @@ public interface AuctionHouseRemoteService extends java.rmi.Remote {
      */
     public void makeBid(Bid bid) throws RemoteException;
 
+    /**
+     *
+     * @return an item
+     * @throws RemoteException
+     */
     public Item getItem() throws RemoteException;
 
     /**
@@ -26,7 +31,6 @@ public interface AuctionHouseRemoteService extends java.rmi.Remote {
      * @return ID of auction house
      */
     public String getID() throws RemoteException;
-
 
 
 }

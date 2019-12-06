@@ -24,19 +24,7 @@ public class BankAccount {
         this.ownerName = ownerName;
     }
 
-    /**
-     * @return the available balance of this account
-     */
-    public synchronized double getAvailableBalance(){
-        return availableBalance;
-    }
 
-    /**
-     * @return the total balance (available balance plus all funds that are tied up in auctions)
-     */
-    public synchronized double getTotalBalance(){
-        return totalBalance;
-    }
 
     /**
      * Make a withdrawal from the account
@@ -52,10 +40,7 @@ public class BankAccount {
         return false;
     }
 
-    /**
-     * @return the accountNumber
-     */
-    public String getAccountNumber(){ return accountId; }
+
 
     /**
      * get a blocked fund related to a particular item
@@ -69,7 +54,6 @@ public class BankAccount {
     public BlockedFund removeBlockedFund(String itemId){
         return blockedFunds.remove(itemId);
     }
-
 
     /**
      * Deposit a specific amount of money into an account
@@ -105,4 +89,23 @@ public class BankAccount {
         blockedFunds.remove(itemId);
         return true; //make a way to where this could return false or maybe throws exception.
     }
+
+    /**
+     * @return the available balance of this account
+     */
+    public synchronized double getAvailableBalance(){
+        return availableBalance;
+    }
+
+    /**
+     * @return the total balance (available balance plus all funds that are tied up in auctions)
+     */
+    public synchronized double getTotalBalance(){
+        return totalBalance;
+    }
+
+    /**
+     * @return the accountNumber
+     */
+    public String getAccountNumber(){ return accountId; }
 }
