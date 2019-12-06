@@ -69,7 +69,9 @@ public class Item implements Serializable {
      */
     @Override
     public String toString(){
-        return NAME+" $%.2f"+maxPrice+" "+ID;
+        return NAME+" $%2f"+maxPrice+" "+ID;
     }
+
+
 
 }

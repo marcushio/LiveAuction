@@ -59,6 +59,8 @@ public class Storage {
     protected void putBack(Item i){
         i.reduceBasePrice();
         items.add(i);
+        //System.out.println("putting back "+i.getNAME());
+
     }
 
     /**Check if the storage is empty

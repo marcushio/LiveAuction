@@ -86,7 +86,7 @@ public class Auction implements Runnable{
 
     /**Runs this thread*/
     public synchronized void run(){
-        System.out.println("    "+item.getNAME()+" $"+maxBidAmount);
+        //System.out.println("    "+item.getNAME()+" $"+maxBidAmount);
         while(!Thread.interrupted()){
             try{
                 if(waitCount == 10){
@@ -96,7 +96,7 @@ public class Auction implements Runnable{
                         /**Tell auction house house winning bidder/item/price*/
                     }else{
                         auctionStatus = -1;
-                        System.out.println("    No one bids on "+item.getNAME());
+                        //System.out.println("    No one bids on "+item.getNAME());
                         /**No one bid on this item, tell auction house to
                          * replace it with a new item*/
                     }
