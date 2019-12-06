@@ -90,7 +90,7 @@ public class Agent implements AgentRemoteService {
     public void registerWithRMI() throws RemoteException{
             AgentRemoteService thisService = this;
             AgentRemoteService stub = (AgentRemoteService) UnicastRemoteObject.exportObject( (AgentRemoteService) thisService, 0);
-            Registry registry = LocateRegistry.createRegistry(1099); // be ready to change back to 1099, 12345 is just for same comp as bank
+            Registry registry = LocateRegistry.createRegistry(12345); // be ready to change back to 1099, 12345 is just for same comp as bank
             registry.rebind("agentServer", stub);
     }
     public ObservableList<String> getItemStringList(){
