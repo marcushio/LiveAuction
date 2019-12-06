@@ -65,8 +65,4 @@ public class Item implements Serializable {
         return NAME+" "+ID;
     }
 
-    public String toString(){
-        return NAME+" "+ ID;
-    }
-
 }

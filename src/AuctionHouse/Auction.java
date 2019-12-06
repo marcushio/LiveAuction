@@ -83,7 +83,7 @@ public class Auction implements Runnable{
         System.out.println("    "+item.getNAME()+" $"+maxBidAmount);
         while(!Thread.interrupted()){
             try{
-                if(waitCount == 120){
+                if(waitCount == 10){
                     /**If some one bid on the item*/
                     if(false){
                         auctionStatus = 1;
