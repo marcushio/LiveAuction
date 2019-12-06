@@ -12,7 +12,6 @@ public class Auction implements Runnable{
     /**Keeps track of the max bid amount*/
     private double maxBidAmount;
     /**Keeps track of the most recent bidder*/
-    private BlockingQueue<Bid> internal;
     /**Times the bid*/
     private int waitCount;
     /**Variable to represent the auction status
@@ -23,7 +22,6 @@ public class Auction implements Runnable{
 
     public Auction(Item item){
         this.item = item;
-        this.internal = internal;
         this.maxBid = new Bid(item.getID(),item.getBasePrice());
         maxBidAmount = item.getBasePrice();
         waitCount = 0;
@@ -85,7 +83,7 @@ public class Auction implements Runnable{
         System.out.println("    "+item.getNAME()+" $"+maxBidAmount);
         while(!Thread.interrupted()){
             try{
-                if(waitCount == 60){
+                if(waitCount == 3){
                     /**If some one bid on the item*/
                     if(false){
                         auctionStatus = 1;
@@ -96,7 +94,6 @@ public class Auction implements Runnable{
                         /**No one bid on this item, tell auction house to
                          * replace it with a new item*/
                     }
-                    internal.put(maxBid);
                     Thread.currentThread().interrupt();
                     break;
                 }else {

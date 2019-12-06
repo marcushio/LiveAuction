@@ -36,6 +36,8 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
     private BlockingQueue<Bid> external = new LinkedBlockingDeque<>();
     private static Scanner scanner = new Scanner(System.in);
     /**Stores the item sold*/
+    private InetAddress ip;
+    private String hostname;
     private BankRemoteService bankService;
     private String bankName = "bankServer";
     private String bankIP = "127.0.0.1";
@@ -65,6 +67,14 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
 
     /**make the remote server*/
     private void initialize(){
+        try{
+            ip = InetAddress.getLocalHost();
+            hostname = ID;
+            System.out.println("Your current IP address: "+ip);
+        }catch (UnknownHostException e){
+            e.printStackTrace();
+        }
+
         try {
             System.out.println("making Auction House "+ID+"...");
             AuctionHouseRemoteService thisServer = this;
@@ -113,9 +123,16 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
                     notifyWinner(stage);
                 }
                 item = storage.getRandomItem();
-                stages[i].replaceItem(item);
+                replaceStage(i,item);
             }
         }
+    }
+
+    private void replaceStage(int i, Item item){
+        Auction temp = new Auction(storage.getRandomItem());
+        stages[i] = temp;
+        Thread t = new Thread(temp);
+        t.start();
     }
 
     private void notifyWinner(Auction stage){
@@ -168,7 +185,7 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
             Registry rmiRegistry = LocateRegistry.getRegistry(bankIP);
             bankService = (BankRemoteService) rmiRegistry.lookup(bankName);  //this is for remote machines
             //bankService = (BankRemoteService) Naming.lookup("bankServer"); // -this was used when on same pc;
-            accountNumber = bankService.registerAuctionHouse(InetAddress.getLocalHost().toString(), ID);
+            accountNumber = bankService.registerAuctionHouse(ip.toString(), ID);
             //InetAddress.getLocalHost(); returns an InetAddress
             //InetAddress.getLocalHost().getHostAddress returns string...
         } catch(IOException e){
@@ -205,14 +222,12 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
         /**First Thing register at bank*/
         registerAtBank();
         initialize();
-        int count = 0;
         while(!Thread.interrupted()){
             try{
-                System.out.println(count++);
                 if(!external.isEmpty()) {
                     processBid();
                 }
-
+                checkOnAuctions();
                 /*if(!storage.isEmpty()){
                     removeStage();
                     addNewStage();
