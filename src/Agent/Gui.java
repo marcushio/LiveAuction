@@ -47,12 +47,6 @@ public class Gui extends Application {
                 } catch (Exception e) {
                     status [0] = "Failed to connect to bank.";
                 }
-                try{
-                    agent.registerWithRMI();
-                }
-                catch(RemoteException e){
-                    status[0] = "RMI Registration Failure";
-                }
             }
 
         }

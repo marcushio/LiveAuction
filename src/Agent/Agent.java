@@ -68,7 +68,13 @@ public class Agent implements AgentRemoteService {
         catch(Exception ex) {
             userMessages.set(ex.getMessage());
         }
-     }
+        try {
+            registerWithRMI();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            System.out.println("AGENT COULD NOT BE REMOTE");
+        }
+    }
 
     private void connectToBank(String bankAddress) throws RemoteException, NotBoundException {
         String[] addressComponents = bankAddress.split("/" , 2);
@@ -76,17 +82,14 @@ public class Agent implements AgentRemoteService {
         bankName = addressComponents[1];
         Registry rmiRegistry = LocateRegistry.getRegistry(bankIP);
         bankService = (BankRemoteService) rmiRegistry.lookup(bankName);
-        accountID = bankService.registerAgent(name.get(),Double.valueOf(liquidFunds));
+        accountID = bankService.registerAgent(name.get(), liquidFunds);
     }
-
-
-
+    //TODO give agents unique names
     public void registerWithRMI() throws RemoteException{
             AgentRemoteService thisService = this;
             AgentRemoteService stub = (AgentRemoteService) UnicastRemoteObject.exportObject( (AgentRemoteService) thisService, 0);
             Registry registry = LocateRegistry.createRegistry(1099);
             registry.rebind("agentServer", stub);
-            System.out.println("Server created... server running...");
     }
     public ObservableList<String> getItemStringList(){
         return itemList;
@@ -148,7 +151,9 @@ public class Agent implements AgentRemoteService {
             String addressComponents [] = selectedHouseAddress.split("/");
             Registry rmiRegistry = LocateRegistry.getRegistry(addressComponents[0]);
             selectedHouse = (AuctionHouseRemoteService) rmiRegistry.lookup(addressComponents[1]);
-            refreshItemList();
+            String test = selectedHouse.getItem();
+            //refreshItemList();
+            System.out.println("DONE");
         }
         catch(NotBoundException e){
             String oldMessage = userMessages.get();
