@@ -84,11 +84,11 @@ public class Agent implements AgentRemoteService {
     }
     //TODO give agents unique names
     public void registerWithRMI() throws RemoteException{
-            AgentRemoteService thisService = this;
-            AgentRemoteService stub = (AgentRemoteService) UnicastRemoteObject.exportObject( (AgentRemoteService) thisService, 0);
-            //TODO account for multiple agents either make them use same rmi or generate diff ports
-            Registry registry = LocateRegistry.createRegistry(1099);// be ready to change back to 1099, 12345 is just for same comp as bank
-            registry.rebind("agentServer", stub);
+        AgentRemoteService thisService = this;
+        AgentRemoteService stub = (AgentRemoteService) UnicastRemoteObject.exportObject( (AgentRemoteService) thisService, 0);
+        //TODO account for multiple agents either make them use same rmi or generate diff ports
+        Registry registry = LocateRegistry.createRegistry(1099);// be ready to change back to 1099, 12345 is just for same comp as bank
+        registry.rebind("agentServer", stub);
     }
     public ObservableList<String> getItemStringList(){
         return itemList;
@@ -108,7 +108,7 @@ public class Agent implements AgentRemoteService {
         }
     }
     public void refreshItemList() throws RemoteException{
-         List<Item> items = selectedHouse.getListedItems();
+        List<Item> items = selectedHouse.getListedItems();
         List<String> itemStrings = new ArrayList<>();
         for(Item item : items){
             itemStrings.add(item.toString());
@@ -203,6 +203,7 @@ public class Agent implements AgentRemoteService {
             bidList.add(bid.toString());
         }
     }
+
 
     public String getAccountID() {
         return accountID;
