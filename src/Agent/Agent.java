@@ -28,6 +28,7 @@ import static Helper.BidStatusMessage.WINNER;
  */
 public class Agent implements AgentRemoteService {
     private Set<Bid> bidsMade = new HashSet<>();
+    private List<Item> currentItems = new ArrayList<>();
     private StringProperty userMessages = new SimpleStringProperty("");
     private StringProperty currentBidAmount = new SimpleStringProperty("0.00");
     private ObservableList<String> itemList = FXCollections.observableArrayList();
@@ -108,9 +109,9 @@ public class Agent implements AgentRemoteService {
         }
     }
     public void refreshItemList() throws RemoteException{
-        List<Item> items = selectedHouse.getListedItems();
+        currentItems = selectedHouse.getListedItems();
         List<String> itemStrings = new ArrayList<>();
-        for(Item item : items){
+        for(Item item : currentItems){
             itemStrings.add(item.toString());
         }
         itemList.clear();
@@ -186,6 +187,7 @@ public class Agent implements AgentRemoteService {
      */
     public void updateBid(Bid bid) throws RemoteException{
         if(bid.getStatus() == WINNER) bankService.transferBlockedFunds(accountID, bid.getItemID());
+        bidsMade.remove(bid);
         bidsMade.add(bid);
         refreshBidList();
     }
