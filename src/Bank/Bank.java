@@ -143,11 +143,10 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
         BankAccount newbidAccount = clientAccounts.get(newbid.getBidderID());
         String itemID = newbid.getItemID();
         successful = blockFunds(newbid, auctionHouseAccountID);
-
-//        if(!oldbid.isEmpty()) {
-//            BankAccount oldbidAccount = clientAccounts.get(oldbid.getBidderID());
-//            oldbidAccount.unblockFunds(itemID);
-//        }
+        if(!oldbid.isEmpty()) {
+            BankAccount oldbidAccount = clientAccounts.get(oldbid.getBidderID());
+            oldbidAccount.unblockFunds(itemID);
+        }
         return successful;
     }
 
