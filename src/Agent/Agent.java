@@ -14,10 +14,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static Helper.BidStatusMessage.ACCEPTED;
 import static Helper.BidStatusMessage.WINNER;
@@ -28,7 +25,7 @@ import static Helper.BidStatusMessage.WINNER;
  */
 public class Agent implements AgentRemoteService {
     private Set<Bid> bidsMade = new HashSet<>();
-    private List<Item> currentItems = new ArrayList<>();
+    private HashMap<String,String> itemStringstoItemIDs = new HashMap<>();
     private StringProperty userMessages = new SimpleStringProperty("");
     private StringProperty currentBidAmount = new SimpleStringProperty("0.00");
     private ObservableList<String> itemList = FXCollections.observableArrayList();
@@ -109,10 +106,11 @@ public class Agent implements AgentRemoteService {
         }
     }
     public void refreshItemList() throws RemoteException{
-        currentItems = selectedHouse.getListedItems();
+        List <Item> currentItems = selectedHouse.getListedItems();
         List<String> itemStrings = new ArrayList<>();
         for(Item item : currentItems){
             itemStrings.add(item.toString());
+            itemStringstoItemIDs.put(item.toString(), item.getID());
         }
         itemList.clear();
         itemList.addAll(itemStrings);
@@ -173,11 +171,12 @@ public class Agent implements AgentRemoteService {
     }
 
     public void submitBid() throws RemoteException{
-        Bid bid = new Bid(selectedItemProperty.get(),Double.parseDouble(currentBidAmount.get()));
+        Bid bid = new Bid(itemStringstoItemIDs.get(selectedItemProperty.get()),Double.parseDouble(currentBidAmount.get()));
         bid.setBidderID(accountID);
         bid.setAgentIP(ipAddress);
         bid.setHouseAddress(selectedHouseProperty.get());
         bid.setAgentServer(serverName);
+        bid.setItemDescription(selectedItemProperty.get());
         selectedHouse.makeBid(bid);
     }
 

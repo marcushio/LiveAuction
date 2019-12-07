@@ -11,6 +11,7 @@ import java.io.Serializable;
  */
 public class Bid implements Serializable {
     private static final long serialVersionUID = -4705472581793918514L;
+    private String itemDescription = "";
     private String itemID;
     private String bidderID;
     private String agentIP;
@@ -55,7 +56,7 @@ public class Bid implements Serializable {
     @Override
     public String toString(){
         StringBuilder builder = new StringBuilder();
-        builder.append(itemID);
+        builder.append(itemDescription);
         builder.append(dollarAmount);
         builder.append(status.toString());
         return builder.toString();
@@ -125,4 +126,11 @@ public class Bid implements Serializable {
         this.agentServer = agentServer;
     }
 
+    public String getItemDescription() {
+        return itemDescription;
+    }
+
+    public void setItemDescription(String itemDescription) {
+        this.itemDescription = itemDescription;
+    }
 }

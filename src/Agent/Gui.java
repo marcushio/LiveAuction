@@ -193,8 +193,7 @@ public class Gui extends Application {
 
     private void handleSelectItem() {
         String itemToString = itemList.getSelectionModel().getSelectedItem();
-        Scanner scanner = new Scanner(itemToString);
-        selectedItem.setText(scanner.next());
+        selectedItem.setText(itemToString);
     }
 
     private void handleSelectHouse() {
