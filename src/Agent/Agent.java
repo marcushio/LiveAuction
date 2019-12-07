@@ -215,10 +215,10 @@ public class Agent implements AgentRemoteService {
         return true;
     }
 
-    private void setUserMessages(String message){
+    public void setUserMessages(String message){
         String old = userMessages.get();
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        userMessages.set(old+"\n"+timestamp+" - "+message);
+        userMessages.set(old+"\n"+timestamp+"\n      "+message);
     }
 
 }
