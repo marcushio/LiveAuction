@@ -70,10 +70,7 @@ public class Item implements Serializable {
      */
     @Override
     public String toString(){
-        DecimalFormat formatter = new DecimalFormat("#.00");
-        String formattedItem = formatter.format(maxPrice);
-        //return NAME+" $%2f"+maxPrice;
-        return NAME + " " + formattedItem;
+        return NAME + " " ;
 
     }
 
