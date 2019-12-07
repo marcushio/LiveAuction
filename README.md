@@ -4,8 +4,19 @@
 @author: Marcus Trujillo
 
 ### Introduction
-This is an auction that is done in a distributed fashion. It consists of 3 primary
-programs working together, a Bank, an AuctionHouse, and an Agent. 
+This is a suite of networked programs that together implement a blind auction. 
+We opted for the blind style to prevent cheating. Agents cannot work together toward
+any particular outcome if they do not know their opponents bid amounts.
+
+The application consists of 3 primary programs which are based on an bidder, a bank,
+and an auction house.  
+
+
+### Project Assumptions 
+-We expect good input as specified here in the readme. 
+-Special attention must be paid to the command-line arguments used to run the program and
+ textbox input. Specifically, the bid values must be positive decimal numbers.
+-We're setting up all clients with a positive bank account balance. 
 
 ### Usage
 
@@ -47,10 +58,6 @@ The agent has a GUI that the user can operate. The layout is organized into colu
 with 
 
 
-### Project Assumptions 
-We'll just list some assumptions. 
--We're setting up all clients with a positive bank account balance. 
-
 ### Design Choices 
 We used RMI to handle our remote communication rather than managing all the port
 programming ourselves. This implied that we'd have to make our individual programs 
@@ -65,6 +72,7 @@ Agent package - Colton
 Bank package - Marcus
 AuctionHouse package - Jaime
 Helper package - All three of us
+Debugging - All three of us
 
 ### Docs 
 Docs are in the doc folder as usual.
