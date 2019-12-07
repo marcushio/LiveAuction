@@ -73,9 +73,8 @@ public class Agent implements AgentRemoteService {
     }
 
     private void connectToBank(String bankAddress) throws RemoteException, NotBoundException {
-        String[] addressComponents = bankAddress.split("/" , 2);
-        bankIP = addressComponents[0];
-        bankName = addressComponents[1];
+        bankIP = bankAddress;
+        bankName = "bankServer";
         Registry rmiRegistry = LocateRegistry.getRegistry(bankIP);
         bankService = (BankRemoteService) rmiRegistry.lookup(bankName);
         accountID = bankService.registerAgent(name.get(), liquidFunds);

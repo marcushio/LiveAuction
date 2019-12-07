@@ -25,7 +25,6 @@ public class Bid implements Serializable {
         if (!(o instanceof Bid)) return false;
         Bid otherBid = (Bid) o;
         if (!otherBid.itemID.equals(this.itemID)) return false;
-        if (otherBid.dollarAmount != this.dollarAmount) return false;
         return true;
     }
     @Override
@@ -57,7 +56,7 @@ public class Bid implements Serializable {
     public String toString(){
         StringBuilder builder = new StringBuilder();
         builder.append(itemDescription);
-        builder.append(dollarAmount);
+        builder.append(String.format("$%.2f", dollarAmount));
         builder.append(status.toString());
         return builder.toString();
     }
