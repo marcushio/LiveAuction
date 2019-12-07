@@ -14,6 +14,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.sql.Timestamp;
 import java.util.*;
 
 import static Helper.BidStatusMessage.ACCEPTED;
@@ -152,10 +153,12 @@ public class Agent implements AgentRemoteService {
         }
         catch(NotBoundException e){
             String oldMessage = userMessages.get();
-            userMessages.set(oldMessage+"\n"+"NOT BOUND" +"-----------------"+"\n");
+            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+            userMessages.set(oldMessage+"\n"+"NOT BOUND" +timestamp+"\n");
         }
         catch(RemoteException e){
-            userMessages.set("REMOTE HOUSE COULDN'T BE REACHED");
+            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+            userMessages.set("REMOTE HOUSE COULDN'T BE REACHED"+timestamp);
             e.printStackTrace();
         }
 
@@ -215,4 +218,5 @@ public class Agent implements AgentRemoteService {
         }
         return true;
     }
+
 }

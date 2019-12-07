@@ -15,6 +15,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import java.rmi.RemoteException;
+import java.sql.Timestamp;
 
 
 public class Gui extends Application {
@@ -57,11 +58,15 @@ public class Gui extends Application {
 
     }
 
-    private void setWidths(){
+    private void setProportions(){
         userMessages.prefWidthProperty().bind(primaryStage.widthProperty().multiply(.25));
         itemList.prefWidthProperty().bind(primaryStage.widthProperty().multiply(.25));
         auctionHouseList.prefWidthProperty().bind(primaryStage.widthProperty().multiply(.25));
         currentBidsList.prefWidthProperty().bind(primaryStage.widthProperty().multiply(.25));
+        userMessages.prefHeightProperty().bind(primaryStage.widthProperty().multiply(.5));
+        itemList.prefHeightProperty().bind(primaryStage.widthProperty().multiply(.5));
+        auctionHouseList.prefHeightProperty().bind(primaryStage.widthProperty().multiply(.5));
+        currentBidsList.prefHeightProperty().bind(primaryStage.widthProperty().multiply(.5));
     }
 
     @Override
@@ -71,7 +76,8 @@ public class Gui extends Application {
             windowEvent.consume();
             if(agent.canExit()) System.exit(0);
             else {
-                userMessages.appendText("Could not exit because of unresolved bids.");
+                Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                userMessages.appendText("Could not exit because of unresolved bids. -"+timestamp);
             }
 
         });
@@ -85,9 +91,10 @@ public class Gui extends Application {
             bindVariables(agent);
         }
         else{
-            userMessages.appendText(getParameters().getRaw().get(0));
+            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+            userMessages.appendText(getParameters().getRaw().get(0)+" -"+timestamp);
         }
-        setWidths();
+        setProportions();
         primaryStage.show();
     }
     public void bindVariables(Agent agent){
