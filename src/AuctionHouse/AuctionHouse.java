@@ -117,7 +117,21 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
         return -1;
     }
 
-    /**Check on all current auction*/
+    /**Find the index of item
+     * @param itemID Item object to look for
+     * @return index of the item in items.*/
+    public int findItemByID(String itemID){
+        for(int i = 0; i<itemCount;i++){
+            if(itemID.equals(stages[i].getItem().getID())){
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**Check on all current auction
+     * replace auction with new ones if they are done
+     * */
     private void checkOnAuctions(){
         Auction stage;
         Item item;
@@ -130,7 +144,6 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
                     notifyWinner(stage);
                 }else{
                     storage.putBack(stages[i].getItem());
-                    System.out.println("putting back "+stages[i].getItem().getNAME());
                 }
                 item = storage.getRandomItem();
                 replaceStage(i,item);
@@ -138,6 +151,8 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
         }
     }
 
+
+    /**makes a new auction thread, replace the old and run it*/
     private void replaceStage(int i, Item item){
         Auction temp = new Auction(storage.getRandomItem());
         stages[i] = temp;
@@ -145,10 +160,23 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
         t.start();
     }
 
+    /**Notify the highest bidder of given stage that they won the item
+     * @param stage the auction that ended
+     * */
     private void notifyWinner(Auction stage){
-        Bid win = stage.getMaxBid();
-        win.setStatus(BidStatusMessage.WINNER);
-        /**Send this to agent*/
+        try {
+            String address;
+            String server;
+            Bid win = stage.getMaxBid();
+            win.setStatus(BidStatusMessage.WINNER);
+            /**Send this to agent*/
+            address = win.getAgentIP();
+            server = win.getAgentServer();
+            connectToAgent(address, server);
+            agentService.updateBid(win);
+        }catch (RemoteException e){
+            e.printStackTrace();
+        }
     }
 
     /**Remote method for agent to send a bid*/
@@ -160,7 +188,10 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
         }
     }
 
-    /**Try process bid*/
+    /**take out a bid from blocking queue and try to process it
+     * compare the price between old bid and new bid
+     * notify bidder who succeeded and the bidder who just got outbidx
+     * */
     private void processBid(){
         try {
             Auction auction;
@@ -169,16 +200,18 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
             String server;
             boolean check;
             if (newBid != null) {
-                Item i = newBid.getItem();
-                double price = newBid.getPriceVal();
-                int index = findItem(i);
+                int index = findItemByID(newBid.getItemID());
                 if (index > -1) {
+                    double price = newBid.getPriceVal();
                     auction = stages[index];
                     Bid oldBid = auction.getMaxBid();
-                        address = oldBid.getAgentIP();
-                        server = oldBid.getAgentServer();
+                    address = oldBid.getAgentIP();
+                    server = oldBid.getAgentServer();
+                    System.out.println("agent "+ newBid.getBidderID()+" tries to bid on "+auction.getItem().getNAME()+" for $"+newBid.getBidAmount());
+                    System.out.printf("Old bid amount is $"+oldBid.getBidAmount());
                     /**Check if the new bid amount is higher than current max bid*/
                     if (price > oldBid.getBidAmount()) {
+                        System.out.println("new bid higher than old bid, bid succeed!");
                         check = bankService.attemptBlockFunds(newBid,oldBid,accountNumber);
                         /**Request bank to check affordable*/
                         if (check) {
@@ -193,7 +226,6 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
                             }
                             newBid.setStatus(BidStatusMessage.ACCEPTED);
                             auction.updateBid(newBid);
-                            //bankService.unblockFunds();
                         }
                     }
                 } else {
@@ -212,40 +244,25 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
 
     /**Register an account at bank with ID(Used as account ID?)*/
     private void registerAtBank(){
-        //code below is to connect to the bank over RMI
         try {
             Registry rmiRegistry = LocateRegistry.getRegistry(bankIP);
             bankService = (BankRemoteService) rmiRegistry.lookup(bankName);  //this is for remote machines
-            //bankService = (BankRemoteService) Naming.lookup("bankServer"); // -this was used when on same pc;
             accountNumber = bankService.registerAuctionHouse(ip, ID);
-            System.out.println("My account number is"+accountNumber);
-            //InetAddress.getLocalHost(); returns an InetAddress
-            //InetAddress.getLocalHost().getHostAddress returns string...
         } catch(IOException e){
             e.printStackTrace();
         } catch(NotBoundException ex){
             ex.printStackTrace();
         }
-        //
-
-        /// getting auction's ip stuffs ////
-//        InetAddress ip;
-//        String hostname;
-//        try{
-//            ip = InetAddress.getLocalHost();
-//            hostname = ip.getHostName();
-//        } catch (UnknownHostException ex ){
-//
-//        }
-        ///////
     }
 
+    /**Method to be called to connect to the proxy of given agent in the parameter
+     * @param agentAddress the ip address of agent
+     * @param agentServer the server name of agent
+     * */
     private void connectToAgent(String agentAddress,String agentServer) {
         try {
             Registry rmiRegistry = LocateRegistry.getRegistry(agentAddress);
             agentService = (AgentRemoteService) rmiRegistry.lookup(agentServer);
-            //agentService.test();
-
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -262,25 +279,23 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
     }
 
     @Override
+    /**Runs this thread, process bids in blocking queue and checks on all auctions going on*/
     public synchronized void run() {
-        /**First Thing register at bank*/
+        /**First Thing to do when running this thread
+         * initialize and register at bank*/
         initialize();
         registerAtBank();
-        //connectToAgent("64.1","agentServer");
         while(!Thread.interrupted()){
             try{
                 if(!external.isEmpty()) {
                     processBid();
                 }
                 checkOnAuctions();
-                /*if(!storage.isEmpty()){
-                    removeStage();
-                    addNewStage();
-                }else{
+                if(storage.isEmpty()){
                     System.out.println("Storage Empty, Auction House Closing!");
                     Thread.currentThread().interrupt();
                     break;
-                }*/
+                }
                 Thread.sleep(1000);
             }catch (InterruptedException e){
                 e.printStackTrace();

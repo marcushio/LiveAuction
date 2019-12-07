@@ -1,6 +1,7 @@
 package Helper;
 
 import java.io.Serializable;
+import java.text.DecimalFormat;
 import java.util.UUID;
 /**Object representing the items in Auction House*/
 public class Item implements Serializable {
@@ -69,7 +70,12 @@ public class Item implements Serializable {
      */
     @Override
     public String toString(){
-        return NAME+" $%.2f"+maxPrice+" "+ID;
+        DecimalFormat formatter = new DecimalFormat("#.00");
+        String formattedItem = formatter.format(maxPrice);
+        //return NAME+" $%2f"+maxPrice;
+        return NAME + " " + formattedItem;
     }
+
+
 
 }
