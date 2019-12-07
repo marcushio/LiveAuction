@@ -63,7 +63,7 @@ public class Agent implements AgentRemoteService {
             connectToBank(bankAddress);
         }
         catch(Exception ex) {
-            userMessages.set(ex.getMessage());
+            setUserMessages("Could not connect to bank.");
         }
         try {
             registerWithRMI();
@@ -102,7 +102,7 @@ public class Agent implements AgentRemoteService {
             auctionHouseList.addAll(houseAddresses);
         }
         catch (RemoteException e){
-            userMessages.set("Failed to connect to bank.");
+            setUserMessages("Failed to connect to bank.");
         }
     }
     public void refreshItemList() throws RemoteException{
@@ -152,14 +152,10 @@ public class Agent implements AgentRemoteService {
             System.out.println("DONE");
         }
         catch(NotBoundException e){
-            String oldMessage = userMessages.get();
-            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-            userMessages.set(oldMessage+"\n"+"NOT BOUND" +timestamp+"\n");
+            setUserMessages("House is not bound. Try a different one.");
         }
         catch(RemoteException e){
-            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-            userMessages.set("REMOTE HOUSE COULDN'T BE REACHED"+timestamp);
-            e.printStackTrace();
+            setUserMessages("Remote exception from auction house. Try a different one.");
         }
 
     }
@@ -217,6 +213,12 @@ public class Agent implements AgentRemoteService {
             if(bid.getStatus() == ACCEPTED) return false;
         }
         return true;
+    }
+
+    private void setUserMessages(String message){
+        String old = userMessages.get();
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        userMessages.set(old+"\n"+timestamp+" - "+message);
     }
 
 }
