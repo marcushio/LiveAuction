@@ -24,24 +24,6 @@ public class BankAccount {
         this.ownerName = ownerName;
     }
 
-
-
-    /**
-     * Make a withdrawal from the account
-     * @param amount that you want to subtract from the amount
-     * @return if we could make the withdrawal for this amount
-     */
-    public synchronized boolean withdraw(double amount){
-        if( (this.availableBalance - amount) > 0 ) {
-           // this.availableBalance = this.availableBalance - amount;
-            this.totalBalance = this.totalBalance - amount;
-            return true;
-        }
-        return false;
-    }
-
-
-
     /**
      * get a blocked fund related to a particular item
      * @param itemId
@@ -51,7 +33,13 @@ public class BankAccount {
         return blockedFunds.get(itemId);
     }
 
-    public BlockedFund removeBlockedFund(String itemId){
+    /**
+     * remove the blocked fund from the account
+     * @param itemId
+     * @return
+     */
+    public BlockedFund withdrawBlockedFund(String itemId){
+        totalBalance -= blockedFunds.get(itemId).getAmount();
         return blockedFunds.remove(itemId);
     }
 
@@ -107,5 +95,6 @@ public class BankAccount {
     /**
      * @return the accountNumber
      */
+
     public String getAccountNumber(){ return accountId; }
 }

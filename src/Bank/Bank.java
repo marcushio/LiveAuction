@@ -49,11 +49,9 @@ public class Bank implements BankRemoteService { //extends UnicastRemoteObject
      * @return true if it worked
      */
     public synchronized boolean transferBlockedFunds(String payerAccountId, String itemId) throws RemoteException {
-        //check for sufficient funds?
         boolean successful = true;
         BankAccount payerAccount = clientAccounts.get(payerAccountId);
-        BlockedFund transferFund = payerAccount.removeBlockedFund(itemId);
-        successful = payerAccount.withdraw(transferFund.getAmount()); //if it succesfully withdrew it returns true.
+        BlockedFund transferFund = payerAccount.withdrawBlockedFund(itemId);
 
         BankAccount payeeAccount = clientAccounts.get(transferFund.getAuctionHouseAccountId());
         successful = payeeAccount.deposit(transferFund.getAmount());  //if it succesfully put the money in it returns true
