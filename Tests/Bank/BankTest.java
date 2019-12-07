@@ -16,7 +16,7 @@ class BankTest {
     void getAuctionHouseAddresses(){
 
     }
-    
+
     @Test
     void testFormat(){
         DecimalFormat formatter = new DecimalFormat("#.00");

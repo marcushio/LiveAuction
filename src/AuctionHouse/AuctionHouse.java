@@ -179,7 +179,7 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
                         server = oldBid.getAgentServer();
                     /**Check if the new bid amount is higher than current max bid*/
                     if (price > oldBid.getBidAmount()) {
-                        check = bankService.attemptBlockFunds(newBid,oldBid,ID);
+                        check = bankService.attemptBlockFunds(newBid,oldBid,accountNumber);
                         /**Request bank to check affordable*/
                         if (check) {
                             /**Inform current bidder
