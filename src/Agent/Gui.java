@@ -14,14 +14,12 @@ import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-
 import java.rmi.RemoteException;
-import java.text.ParseException;
-import java.util.List;
-import java.util.Scanner;
+
 
 public class Gui extends Application {
-    private Pane root;
+    private Stage primaryStage;
+    private Pane root = new Pane();
     private Scene scene;
     private TextField userEnteredAmount = new TextField("0.00");
     private ListView<String> itemList = new ListView<>();
@@ -59,9 +57,16 @@ public class Gui extends Application {
 
     }
 
+    private void setWidths(){
+        userMessages.prefWidthProperty().bind(primaryStage.widthProperty().multiply(.25));
+        itemList.prefWidthProperty().bind(primaryStage.widthProperty().multiply(.25));
+        auctionHouseList.prefWidthProperty().bind(primaryStage.widthProperty().multiply(.25));
+        currentBidsList.prefWidthProperty().bind(primaryStage.widthProperty().multiply(.25));
+    }
 
     @Override
     public void start(Stage primaryStage) {
+        this.primaryStage = primaryStage;
         primaryStage.setOnCloseRequest((WindowEvent windowEvent) -> {
             windowEvent.consume();
             if(agent.canExit()) System.exit(0);
@@ -82,6 +87,7 @@ public class Gui extends Application {
         else{
             userMessages.appendText(getParameters().getRaw().get(0));
         }
+        setWidths();
         primaryStage.show();
     }
     public void bindVariables(Agent agent){
@@ -101,7 +107,6 @@ public class Gui extends Application {
         scene = new Scene(root, screenBounds.getWidth(),screenBounds.getHeight());
     }
     private void makeLayout(){
-        root = new Pane();
         HBox columnContainer = new HBox();
         root.getChildren().add(columnContainer);
         columnContainer.getChildren().addAll(
@@ -137,7 +142,7 @@ public class Gui extends Application {
                 getLabeledNodeBox("Selected Item: ", selectedItem),
                 submitBid,
                 new Separator(Orientation.HORIZONTAL),
-                new Text("Current Bids"),
+                new Text("Bid Statuses"),
                 currentBidsList
         );
         return column;
@@ -165,7 +170,7 @@ public class Gui extends Application {
         ScrollPane scrollItems = new ScrollPane(itemList);
         buttons.getChildren().addAll(selectItem, refreshItems);
         column.getChildren().addAll(
-                getLabeledNodeBox("Selected House: ", selectedHouse),
+
                 new Separator(Orientation.HORIZONTAL),
                 new Text("Items"),
                 scrollItems,

@@ -55,9 +55,9 @@ public class Bid implements Serializable {
     @Override
     public String toString(){
         StringBuilder builder = new StringBuilder();
-        builder.append(itemDescription);
+        builder.append(itemDescription+" ");
         builder.append(String.format("$%.2f", dollarAmount));
-        builder.append(status.toString());
+        builder.append(" "+status.toString());
         return builder.toString();
     }
     /**get Item String ID*/
