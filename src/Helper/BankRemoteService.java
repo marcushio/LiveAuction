@@ -102,8 +102,19 @@ public interface BankRemoteService extends java.rmi.Remote{
      */
     public boolean attemptBlockFunds(Bid newbid, Bid oldBid,  String auctionHouseAccountID) throws RemoteException;
 
+    /**
+     *
+     * @param bid
+     * @param auctionHouseAccountID
+     * @return
+     * @throws RemoteException
+     */
     public boolean blockFunds(Bid bid, String auctionHouseAccountID) throws RemoteException;
 
+    /**
+     * just a tester method
+     * @throws RemoteException
+     */
     public void remoteTest() throws RemoteException;
 
 }
