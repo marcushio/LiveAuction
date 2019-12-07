@@ -77,7 +77,7 @@ public class Gui extends Application {
             if(agent.canExit()) System.exit(0);
             else {
                 Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                userMessages.appendText("Could not exit because of unresolved bids. -"+timestamp);
+                userMessages.appendText(timestamp+"\n    Could not exit because of unresolved bids. ");
             }
 
         });
@@ -92,7 +92,7 @@ public class Gui extends Application {
         }
         else{
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-            userMessages.appendText(getParameters().getRaw().get(0)+" -"+timestamp);
+            userMessages.appendText(timestamp+"\n    "+getParameters().getRaw().get(0)+" -");
         }
         setProportions();
         primaryStage.show();
