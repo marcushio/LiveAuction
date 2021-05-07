@@ -27,7 +27,7 @@ public class AuctionHouse implements Runnable, AuctionHouseRemoteService{
     private int itemCount = 3;
     /**Object containing all items*/
     private Storage storage;
-    private static String book = "/nfs/student/z/zjamiey/Documents/DistributedAuction/Resource/Items.txt";
+    private static String book = "/nfs/student/m/marcustrujillo/Documents/auction/DistributedAuction/Resource";
     public Auction[] stages;
     private static int portNumber;
     private String accountNumber;
